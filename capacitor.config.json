@@ -1,0 +1,12 @@
+{
+  "appId": "com.groovelab.app",
+  "appName": "Groove Lab",
+  "webDir": "public",
+  "server": {
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowCleartext": true
+  }
+}

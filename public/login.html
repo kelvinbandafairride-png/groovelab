@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--primary:#58a6ff}
+
+.login-page{min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)),url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;padding:20px}
+.container{width:100%;max-width:1000px;display:flex;align-items:center;justify-content:space-between;padding:20px;gap:40px}
+.left-section{color:white;width:50%}
+.left-section h1{font-size:60px;color:var(--primary);font-weight:bold;margin-bottom:10px}
+.left-section p{font-size:28px;line-height:1.4}
+.login-box{width:400px;background:var(--card);padding:25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.music-icon{text-align:center;margin-bottom:15px;font-size:45px;color:var(--primary)}
+.login-box input{width:100%;padding:15px;margin-bottom:15px;border:1px solid var(--border, #ddd);border-radius:8px;font-size:16px;outline:none;background:var(--bg);color:var(--text)}
+.login-box input:focus{border-color:var(--primary);box-shadow:0 0 5px rgba(24,119,242,0.4)}
+body.dark .login-box input{border-color:#30363d}
+.login-btn{width:100%;padding:14px;background:var(--primary);border:none;color:white;font-size:18px;font-weight:bold;border-radius:8px;cursor:pointer;transition:0.3s}
+.login-btn:hover{opacity:0.9}
+.forgot{display:block;text-align:center;margin:15px 0;text-decoration:none;color:var(--primary);font-size:14px}
+.line{height:1px;background:var(--border, #ddd);margin:20px 0}
+body.dark .line{background:#30363d}
+.create-btn{display:block;margin:auto;background:#42b72a;color:white;border:none;padding:14px 20px;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.3s;text-decoration:none;text-align:center}
+.create-btn:hover{background:#36a420}
+.error-msg{color:#e74c3c;font-size:13px;text-align:center;margin-bottom:10px;display:none}
+.loading{text-align:center;margin:10px 0;display:none;color:var(--text2)}
+
+@media(max-width:900px){
+.container{flex-direction:column;text-align:center}
+.left-section{width:100%;margin-bottom:40px}
+.left-section h1{font-size:50px}
+.left-section p{font-size:22px}
+.login-box{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="login-page">
+<div class="container">
+<div class="left-section">
+<h1>Groove Lab</h1>
+<p>Connect with music lovers, artists and beats from around the world.</p>
+</div>
+<div class="login-box">
+<div class="music-icon"><i class="fa-solid fa-music"></i></div>
+<div class="error-msg" id="errorMsg"></div>
+<div class="loading" id="loading">Signing in...</div>
+<form id="loginForm">
+<input type="email" id="loginEmail" placeholder="Email address" required>
+<input type="password" id="loginPassword" placeholder="Password" required>
+<button type="submit" class="login-btn">Log In</button>
+<a href="#" class="forgot">Forgot password?</a>
+<div class="line"></div>
+<a href="signup.html" class="create-btn">Create New Account</a>
+</form>
+</div>
+</div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e){
+e.preventDefault();
+const email=document.getElementById('loginEmail').value.trim();
+const password=document.getElementById('loginPassword').value.trim();
+const err=document.getElementById('errorMsg');
+const load=document.getElementById('loading');
+err.style.display='none';
+load.style.display='block';
+try {
+const user=await API.login(email,password);
+window.location='mainmenu.html';
+} catch(e){
+err.textContent=e.message;
+err.style.display='block';
+} finally {
+load.style.display='none';
+}
+});
+if(localStorage.getItem('grooveTheme')==='dark')document.body.classList.add('dark');
+</script>
+</body>
+</html>

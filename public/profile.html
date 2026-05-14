@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-icons{display:flex;align-items:center;gap:12px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:1100px;margin:0 auto;padding:100px 20px 30px}
+.cover-wrap{height:300px;border-radius:28px;overflow:hidden;position:relative;margin-bottom:20px;background:linear-gradient(135deg,#1877f2,#0d65d9)}
+.cover-wrap img{width:100%;height:100%;object-fit:cover;opacity:0.5}
+.profile-header{display:flex;gap:25px;align-items:flex-end;margin-top:-80px;position:relative;z-index:2;padding:0 20px;flex-wrap:wrap}
+.avatar-wrap{width:160px;height:160px;border-radius:50%;border:5px solid var(--card);overflow:hidden;background:var(--card);flex-shrink:0}
+.avatar-wrap img{width:100%;height:100%;object-fit:cover}
+.profile-info{flex:1;min-width:200px}
+.profile-info h2{font-size:32px;margin-bottom:5px}
+.profile-info .username{color:var(--text2);font-size:16px;margin-bottom:8px}
+.profile-info .bio{color:var(--text2);line-height:1.5;margin-bottom:12px}
+.edit-btn{padding:10px 25px;border-radius:25px;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer;transition:0.3s}
+.edit-btn:hover{opacity:0.9}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin:25px 0}
+.stat-card{background:var(--card);border-radius:20px;padding:20px;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
+.stat-card .num{font-size:28px;font-weight:700;color:var(--primary)}
+.stat-card .label{color:var(--text2);font-size:14px;margin-top:5px}
+.content-grid{display:grid;grid-template-columns:2fr 1fr;gap:25px;margin-top:10px}
+.section-card{background:var(--card);border-radius:24px;padding:25px;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
+.section-card h3{font-size:20px;margin-bottom:18px}
+.section-card h3 i{color:var(--primary);margin-right:10px}
+.achieve-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
+.badge{text-align:center;padding:15px 10px;border-radius:16px;background:var(--bg);transition:0.3s}
+.badge i{font-size:32px;color:var(--primary);margin-bottom:8px}
+.badge p{font-size:12px;color:var(--text2)}
+.activity-item{display:flex;align-items:center;gap:15px;padding:12px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border:none}
+.activity-item i{width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:18px}
+.activity-item .act-info{flex:1}
+.activity-item .act-info p{font-size:14px}
+.activity-item .act-info span{font-size:12px;color:var(--text2)}
+.progress-lesson{margin-bottom:15px}
+.progress-lesson p{font-size:14px;margin-bottom:5px;display:flex;justify-content:space-between}
+.progress-bar{height:8px;background:var(--bg);border-radius:20px;overflow:hidden}
+.progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width 0.5s}
+@media(max-width:768px){.content-grid{grid-template-columns:1fr}.cover-wrap{height:200px}.profile-header{margin-top:-60px}.avatar-wrap{width:120px;height:120px}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<div class="container">
+<div class="cover-wrap"><img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1400&auto=format&fit=crop" alt=""></div>
+<div class="profile-header">
+<div class="avatar-wrap"><img src="https://i.pravatar.cc/200?img=32" id="profileAvatar" alt="Avatar"></div>
+<div class="profile-info">
+<h2 id="displayName">Loading...</h2>
+<p class="username" id="displayEmail">@loading</p>
+<p class="bio" id="displayBio">Loading profile...</p>
+<button class="edit-btn" onclick="editBio()"><i class="fa-solid fa-pen"></i> Edit Bio</button>
+</div>
+</div>
+
+<div class="stats-row">
+<div class="stat-card"><div class="num" id="statLessons">0</div><div class="label">Lessons Done</div></div>
+<div class="stat-card"><div class="num" id="statAchievements">0</div><div class="label">Achievements</div></div>
+<div class="stat-card"><div class="num" id="statUploads">0</div><div class="label">Uploads</div></div>
+</div>
+
+<div class="content-grid">
+<div class="left-col">
+<div class="section-card"><h3><i class="fa-solid fa-trophy"></i> Achievements</h3><div class="achieve-grid" id="achieveGrid"><p style="color:var(--text2)">Loading...</p></div></div>
+<div class="section-card"><h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3><div id="activityFeed"><p style="color:var(--text2)">Loading...</p></div></div>
+</div>
+<div class="right-col">
+<div class="section-card"><h3><i class="fa-solid fa-chart-simple"></i> Learning Progress</h3><div id="progressSection"><p style="color:var(--text2)">Loading...</p></div></div>
+<div class="section-card"><h3><i class="fa-solid fa-music"></i> My Uploads</h3><div id="uploadSection"><p style="color:var(--text2)">Loading...</p></div></div>
+</div>
+</div>
+</div>
+
+<script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+
+async function loadProfile(){
+try {
+const user=await API.getMe();
+if(!user){window.location='login.html';return}
+document.getElementById('displayName').textContent=user.first_name+' '+user.surname;
+document.getElementById('displayEmail').textContent='@'+user.email;
+document.getElementById('displayBio').textContent=user.bio||'No bio yet. Click edit to add one!';
+if(user.avatar)document.getElementById('profileAvatar').src=user.avatar;
+
+const userData=await API.get('/api/users/'+user.id);
+if(userData.stats){
+document.getElementById('statLessons').textContent=userData.stats.lessons;
+document.getElementById('statAchievements').textContent=userData.stats.achievements;
+document.getElementById('statUploads').textContent=userData.stats.uploads;
+}
+
+const progData=await API.get('/api/lessons/progress');
+const done=progData.progress.filter(p=>p.quiz_passed).length;
+
+document.getElementById('progressSection').innerHTML=`
+<div class="progress-lesson"><p><span>Lessons Complete</span><span>${done}/4</span></p><div class="progress-bar"><div class="progress-fill" style="width:${(done/4)*100}%"></div></div></div>`;
+
+const badges=['Drummer','Rising Star','First Upload','5 Day Streak','Pro Producer','Globetrotter'];
+const earned=progData.achievements.map(a=>a.badge_name);
+const grid=document.getElementById('achieveGrid');
+grid.innerHTML=badges.map(b=>`<div class="badge ${earned.includes(b)?'':'locked'}"><i class="fa-solid ${earned.includes(b)?'fa-star':'fa-lock'}"></i><p>${b}</p></div>`).join('');
+
+const actData=await API.get('/api/activity');
+const feed=document.getElementById('activityFeed');
+const icons={post:'fa-comment',lesson:'fa-play',upload:'fa-upload',achievement:'fa-trophy'};
+if(actData.activities.length===0){feed.innerHTML='<p style="color:var(--text2)">No activity yet. Start learning!</p>';return}
+feed.innerHTML=actData.activities.map(a=>`<div class="activity-item"><i class="fa-solid ${icons[a.type]||'fa-circle'}"></i><div class="act-info"><p>${a.text}</p><span>${new Date(a.time).toLocaleDateString()}</span></div></div>`).join('');
+
+const uplData=await API.get('/api/uploads?user_id='+user.id);
+const uplSection=document.getElementById('uploadSection');
+if(uplData.uploads.length===0){uplSection.innerHTML='<p style="color:var(--text2)">No uploads yet.</p>';return}
+uplSection.innerHTML=uplData.uploads.map(u=>`<div class="activity-item"><i class="fa-solid fa-headphones"></i><div class="act-info"><p>${u.title}</p><span>${u.genre} · ${new Date(u.created_at).toLocaleDateString()}</span></div></div>`).join('');
+} catch(e){console.error(e)}
+}
+
+function editBio(){
+const newBio=prompt('Enter your bio:');
+if(newBio!==null){
+API.getMe().then(user=>{
+API.put('/api/users/'+user.id,{bio:newBio}).then(()=>{document.getElementById('displayBio').textContent=newBio});
+});
+}
+}
+
+loadProfile();
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--primary:#58a6ff}
+
+.signup-page{min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;padding:20px}
+.container{width:100%;max-width:1100px;display:flex;justify-content:space-between;align-items:center;padding:20px;gap:40px}
+.left-section{width:50%;color:white}
+.left-section h1{font-size:60px;color:var(--primary);margin-bottom:15px}
+.left-section p{font-size:28px;line-height:1.4}
+.signup-box{width:430px;background:var(--card);padding:25px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.35)}
+.music-icon{text-align:center;font-size:45px;color:var(--primary);margin-bottom:15px}
+.signup-box h2{text-align:center;margin-bottom:5px;font-size:30px}
+.signup-box .sub{text-align:center;color:var(--text2);margin-bottom:20px;font-size:14px}
+.row{display:flex;gap:10px}
+.signup-box input{width:100%;padding:14px;margin-bottom:15px;border:1px solid var(--border, #ddd);border-radius:8px;font-size:15px;outline:none;background:var(--bg);color:var(--text)}
+body.dark .signup-box input{border-color:#30363d}
+.signup-box input:focus{border-color:var(--primary);box-shadow:0 0 5px rgba(24,119,242,0.4)}
+.gender-title{font-size:14px;margin-bottom:8px;color:var(--text2)}
+.gender-box{display:flex;gap:10px;margin-bottom:15px}
+.gender{flex:1;border:1px solid var(--border, #ddd);border-radius:8px;padding:10px;display:flex;justify-content:space-between;align-items:center;font-size:14px;cursor:pointer}
+body.dark .gender{border-color:#30363d}
+.signup-btn{width:100%;padding:14px;background:#42b72a;border:none;color:white;font-size:18px;font-weight:bold;border-radius:8px;cursor:pointer;transition:0.3s}
+.signup-btn:hover{background:#36a420}
+.login-link{display:block;text-align:center;margin-top:18px;text-decoration:none;color:var(--primary);font-size:15px}
+.error-msg{color:#e74c3c;font-size:13px;text-align:center;margin-bottom:10px;display:none}
+.loading{text-align:center;margin:10px 0;display:none;color:var(--text2)}
+
+@media(max-width:950px){
+.container{flex-direction:column;text-align:center}
+.left-section{width:100%;margin-bottom:40px}
+.left-section h1{font-size:50px}
+.left-section p{font-size:22px}
+.signup-box{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="signup-page">
+<div class="container">
+<div class="left-section">
+<h1>Groove Lab</h1>
+<p>Create your account and join millions sharing music, vibes and creativity worldwide.</p>
+</div>
+<div class="signup-box">
+<div class="music-icon"><i class="fa-solid fa-headphones"></i></div>
+<h2>Create Account</h2>
+<p class="sub">It's quick and easy.</p>
+<div class="error-msg" id="errorMsg"></div>
+<div class="loading" id="loading">Creating account...</div>
+<form id="signupForm">
+<div class="row">
+<input type="text" id="firstName" placeholder="First name" required>
+<input type="text" id="surname" placeholder="Surname" required>
+</div>
+<input type="email" id="signupEmail" placeholder="Email address" required>
+<input type="password" id="signupPassword" placeholder="New password" required minlength="6">
+<input type="date" id="dob" required>
+<div class="gender-title">Gender</div>
+<div class="gender-box">
+<label class="gender">Male <input type="radio" name="gender" value="Male"></label>
+<label class="gender">Female <input type="radio" name="gender" value="Female"></label>
+<label class="gender">Custom <input type="radio" name="gender" value="Custom"></label>
+</div>
+<button type="submit" class="signup-btn">Sign Up</button>
+<a href="login.html" class="login-link">Already have an account?</a>
+</form>
+</div>
+</div>
+</div>
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', async function(e){
+e.preventDefault();
+const firstName=document.getElementById('firstName').value.trim();
+const surname=document.getElementById('surname').value.trim();
+const email=document.getElementById('signupEmail').value.trim();
+const password=document.getElementById('signupPassword').value.trim();
+const dob=document.getElementById('dob').value;
+const gender=document.querySelector('input[name="gender"]:checked');
+const err=document.getElementById('errorMsg');
+const load=document.getElementById('loading');
+err.style.display='none';
+load.style.display='block';
+try {
+const user=await API.signup(firstName,surname,email,password,gender?gender.value:'',dob);
+window.location='mainmenu.html';
+} catch(e){
+err.textContent=e.message;
+err.style.display='block';
+} finally {
+load.style.display='none';
+}
+});
+if(localStorage.getItem('grooveTheme')==='dark')document.body.classList.add('dark');
+</script>
+</body>
+</html>

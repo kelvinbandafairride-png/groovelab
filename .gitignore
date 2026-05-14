@@ -1,0 +1,8 @@
+node_modules/
+data.db
+.env
+GrooveLab.apk
+android/app/build/
+android/.gradle/
+android/local.properties
+*.log

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groove Lab - Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2;--shadow:rgba(0,0,0,0.08)}
+body{background:var(--bg);color:var(--text);overflow-x:hidden}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff;--shadow:rgba(0,0,0,0.3)}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;left:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px var(--shadow)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.search-box{width:360px;background:var(--bg);border-radius:50px;padding:12px 18px;display:flex;align-items:center}
+.search-box i{color:var(--text2)}
+.search-box input{width:100%;border:none;outline:none;background:none;margin-left:10px;font-size:15px;color:var(--text)}
+.nav-icons{display:flex;align-items:center;gap:10px}
+.icon-box{width:50px;height:50px;background:var(--card);border-radius:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;position:relative;box-shadow:0 5px 15px var(--shadow);border:none;color:var(--text);font-size:20px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff;transform:translateY(-2px)}
+.icon-box:hover i{color:#fff}
+.icon-box i{font-size:20px;color:var(--text2);transition:0.3s}
+.mini-menu{position:absolute;top:65px;right:0;width:290px;background:rgba(255,255,255,0.96);backdrop-filter:blur(18px);border-radius:24px;padding:18px;display:none;animation:popup 0.3s ease;box-shadow:0 15px 35px rgba(0,0,0,0.12);z-index:1001;color:var(--text)}
+body.dark .mini-menu{background:rgba(22,27,34,0.96)}
+.mini-menu.show{display:block}
+.mini-menu h3{color:var(--primary);margin-bottom:15px}
+.mini-item{padding:14px;border-radius:14px;margin-bottom:8px;cursor:pointer;transition:0.3s;font-size:15px}
+.mini-item:hover{background:var(--bg)}
+.container{display:flex;gap:25px;padding:100px 20px 100px}
+.left-sidebar{width:23%;position:sticky;top:95px;height:fit-content}
+.side-menu{background:var(--card);border-radius:28px;padding:15px;box-shadow:0 5px 20px var(--shadow)}
+.menu-item{display:flex;align-items:center;gap:15px;padding:16px;border-radius:18px;cursor:pointer;transition:0.3s;margin-bottom:8px;text-decoration:none;color:var(--text)}
+.menu-item:hover{background:var(--bg);transform:translateX(5px)}
+.menu-item i{color:var(--primary);font-size:22px}
+.menu-item span{font-size:16px;font-weight:600}
+.feed{width:52%}
+.hero{height:280px;border-radius:32px;overflow:hidden;position:relative;margin-bottom:25px;box-shadow:0 10px 30px var(--shadow)}
+.hero img{width:100%;height:100%;object-fit:cover}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);display:flex;align-items:flex-end;padding:30px}
+.hero-overlay h2{color:white;font-size:38px;max-width:500px}
+.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+.lesson-card{background:var(--card);border-radius:28px;overflow:hidden;transition:0.3s;box-shadow:0 5px 20px var(--shadow)}
+.lesson-card:hover{transform:translateY(-5px)}
+.lesson-card img{width:100%;height:180px;object-fit:cover}
+.lesson-content{padding:20px}
+.lesson-content h3{margin-bottom:10px}
+.lesson-content p{color:var(--text2);font-size:14px;line-height:1.5}
+.lesson-btn{width:100%;margin-top:15px;padding:13px;border:none;border-radius:15px;background:var(--primary);color:white;font-weight:bold;cursor:pointer;transition:0.3s;text-decoration:none;display:block;text-align:center}
+.lesson-btn:hover{opacity:0.9}
+.right-sidebar{width:25%;position:sticky;top:95px;height:fit-content}
+.widget{background:var(--card);border-radius:28px;padding:20px;margin-bottom:20px;box-shadow:0 5px 20px var(--shadow)}
+.widget h3{color:var(--primary);margin-bottom:15px}
+.progress-box{margin-bottom:18px}
+.progress-box p{margin-bottom:6px;font-size:14px}
+.progress{width:100%;height:10px;background:var(--bg);border-radius:20px;overflow:hidden}
+.fill{height:100%;background:var(--primary)}
+.activity{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.activity img{width:50px;height:50px;border-radius:50%;object-fit:cover}
+.activity span{font-weight:600}
+.music-bar{position:fixed;bottom:0;left:0;width:100%;height:70px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:999;box-shadow:0 -5px 20px var(--shadow)}
+.music-bar .track-info{display:flex;align-items:center;gap:12px;min-width:200px}
+.music-bar .track-info img{width:45px;height:45px;border-radius:10px;object-fit:cover}
+.music-bar .track-info .ttl{font-size:14px;font-weight:600}
+.music-bar .track-info .art{font-size:12px;color:var(--text2)}
+.music-bar .controls{display:flex;align-items:center;gap:18px}
+.music-bar .controls button{width:40px;height:40px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:16px;color:var(--text);transition:0.3s;display:flex;align-items:center;justify-content:center}
+.music-bar .controls button:hover{background:var(--primary);color:#fff}
+.music-bar .controls .play-btn{width:50px;height:50px;background:var(--primary);color:#fff}
+.music-bar .progress-wrap{flex:1;max-width:400px;margin:0 20px}
+.music-bar .progress-wrap input{width:100%;accent-color:var(--primary);cursor:pointer}
+@media(max-width:1100px){
+.left-sidebar,.right-sidebar{display:none}
+.feed{width:100%}
+.search-box{display:none}
+.container{padding:95px 15px 90px}
+.music-bar .track-info{min-width:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+<a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search lessons, artists or beats" id="searchInput" onkeydown="if(event.key==='Enter')doSearch()"></div>
+<div class="nav-icons">
+<a href="index.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
+<a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+<div class="icon-box" onclick="toggleMenu('notifyMenu')">
+<i class="fa-solid fa-bell"></i>
+<div class="mini-menu" id="notifyMenu"><h3>Notifications</h3><div id="notifList"><div class="mini-item">Loading...</div></div></div>
+</div>
+<div class="icon-box" onclick="toggleMenu('settingsMenu')">
+<i class="fa-solid fa-gear"></i>
+<div class="mini-menu" id="settingsMenu">
+<h3>Settings</h3>
+<div class="mini-item" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i> Dark Mode</div>
+<div class="mini-item">Privacy</div>
+<div class="mini-item">Saved Lessons</div>
+<div class="mini-item" onclick="API.logout().then(()=>window.location='login.html')">Logout</div>
+</div>
+</div>
+<a href="admin.html" class="icon-box" id="adminLink" style="display:none"><i class="fa-solid fa-shield-halved"></i></a>
+</div>
+</div>
+
+<div class="container">
+<div class="left-sidebar">
+<div class="side-menu">
+<a href="lessons.html" class="menu-item"><i class="fa-solid fa-drum"></i><span>Drum Lessons</span></a>
+<div class="menu-item"><i class="fa-solid fa-guitar"></i><span>Guitar Lessons</span></div>
+<div class="menu-item"><i class="fa-solid fa-microphone"></i><span>Vocal Training</span></div>
+<div class="menu-item"><i class="fa-solid fa-headphones"></i><span>Studio Sessions</span></div>
+<div class="menu-item"><i class="fa-solid fa-sliders"></i><span>Beat Production</span></div>
+<div class="menu-item"><i class="fa-solid fa-video"></i><span>Live Concerts</span></div>
+<div class="menu-item"><i class="fa-solid fa-users"></i><span>Music Community</span></div>
+</div>
+</div>
+
+<div class="feed">
+<div class="hero">
+<img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1400&auto=format&fit=crop">
+<div class="hero-overlay"><h2 id="greeting">Welcome to Groove Lab</h2></div>
+</div>
+<div class="lessons">
+<div class="lesson-card">
+<img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop">
+<div class="lesson-content"><h3>Beginner Drum Course</h3><p>Learn drum timing, rhythm and beginner grooves step by step.</p><a href="lessons.html" class="lesson-btn">Start Lesson</a></div>
+</div>
+<div class="lesson-card">
+<img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=1200&auto=format&fit=crop">
+<div class="lesson-content"><h3>Acoustic Guitar</h3><p>Practice smooth chord transitions and acoustic techniques.</p><button class="lesson-btn">Start Lesson</button></div>
+</div>
+<div class="lesson-card">
+<img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1200&auto=format&fit=crop">
+<div class="lesson-content"><h3>Live Performance Skills</h3><p>Build confidence and improve your stage performance skills.</p><button class="lesson-btn">Start Lesson</button></div>
+</div>
+<div class="lesson-card">
+<img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop">
+<div class="lesson-content"><h3>Studio Mixing</h3><p>Learn professional mixing and mastering for modern beats.</p><button class="lesson-btn">Start Lesson</button></div>
+</div>
+</div>
+</div>
+
+<div class="right-sidebar">
+<div class="widget"><h3>Your Progress</h3><div id="progressWidget"><div class="progress-box"><p>Loading...</p></div></div></div>
+<div class="widget"><h3>Top Tutors</h3>
+<div class="activity"><img src="https://i.pravatar.cc/100?img=15"><span>DJ Marcus</span></div>
+<div class="activity"><img src="https://i.pravatar.cc/100?img=24"><span>Sarah Melody</span></div>
+<div class="activity"><img src="https://i.pravatar.cc/100?img=32"><span>Nova Beats</span></div>
+</div>
+</div>
+</div>
+
+<div class="music-bar">
+<div class="track-info">
+<img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop" id="trackArt">
+<div><div class="ttl" id="trackTitle">Midnight Groove</div><div class="art" id="trackArtist">Nova Beats</div></div>
+</div>
+<div class="progress-wrap"><input type="range" min="0" max="100" value="35"></div>
+<div class="controls">
+<button onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button>
+<button class="play-btn" onclick="togglePlay()"><i class="fa-solid fa-play" id="playIcon"></i></button>
+<button onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button>
+</div>
+</div>
+
+<script>
+function toggleMenu(menuId){
+document.querySelectorAll('.mini-menu').forEach(m=>{if(m.id!==menuId)m.classList.remove('show')});
+document.getElementById(menuId).classList.toggle('show');
+}
+window.onclick=function(e){
+if(!e.target.closest('.icon-box'))document.querySelectorAll('.mini-menu').forEach(m=>m.classList.remove('show'));
+}
+function toggleTheme(){
+document.body.classList.toggle('dark');
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark')document.body.classList.add('dark');
+
+const playlist=[
+{title:'Midnight Groove',artist:'Nova Beats',art:'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop'},
+{title:'Summer Vibes',artist:'DJ Marcus',art:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=100&auto=format&fit=crop'},
+{title:'Beat Lab Vol 1',artist:'Sarah Melody',art:'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=100&auto=format&fit=crop'}
+];
+let currentTrack=0,isPlaying=false;
+function updateTrack(){const t=playlist[currentTrack];document.getElementById('trackTitle').textContent=t.title;document.getElementById('trackArtist').textContent=t.artist;document.getElementById('trackArt').src=t.art}
+function togglePlay(){isPlaying=!isPlaying;document.getElementById('playIcon').className=isPlaying?'fa-solid fa-pause':'fa-solid fa-play'}
+function nextTrack(){currentTrack=(currentTrack+1)%playlist.length;updateTrack()}
+function prevTrack(){currentTrack=(currentTrack-1+playlist.length)%playlist.length;updateTrack()}
+updateTrack();
+
+// AUTH + DATA
+(async function(){
+try {
+const user=await API.getMe();
+if(!user){window.location='login.html';return;}
+document.getElementById('greeting').textContent='Welcome back, '+user.first_name+'!';
+if(user.role==='admin')document.getElementById('adminLink').style.display='flex';
+
+// Load progress
+const progData=await API.get('/api/lessons/progress');
+const done=progData.progress.filter(p=>p.quiz_passed).length;
+const total=4;
+const pct=Math.round((done/total)*100);
+document.getElementById('progressWidget').innerHTML=`
+<div class="progress-box"><p>Drum Lessons - ${pct}%</p><div class="progress"><div class="fill" style="width:${pct}%"></div></div></div>
+<div class="progress-box"><p>Lessons Completed: ${done}/${total}</p></div>
+<div class="progress-box"><p>Achievements: ${progData.achievements.length}</p></div>`;
+
+// Load notifications
+const notifData=await API.get('/api/notifications');
+const notifList=document.getElementById('notifList');
+if(notifData.notifications.length===0){
+notifList.innerHTML='<div class="mini-item">No notifications yet</div>';
+}else{
+notifList.innerHTML=notifData.notifications.map(n=>`<div class="mini-item">${n.message}</div>`).join('');
+}
+} catch(e){console.error(e)}
+})();
+
+async function doSearch(){
+const q=document.getElementById('searchInput').value.trim();
+if(!q||q.length<2)return;
+const data=await API.get('/api/search?q='+encodeURIComponent(q));
+if(data.results.length===0){alert('No results found');return}
+const links=data.results.map(r=>{
+if(r.type==='lesson')return `Lessons: ${r.name}`;
+if(r.type==='user')return `User: ${r.name}`;
+return `Upload: ${r.name} by ${r.info}`;
+}).join('\n');
+alert('Search results:\n'+links);
+}
+</script>
+</body>
+</html>

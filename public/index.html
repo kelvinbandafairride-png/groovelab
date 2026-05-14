@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groove Lab - Learn Music Production</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--primary:#1877f2}
+body{background:var(--bg);color:var(--text);overflow-x:hidden}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--primary:#58a6ff}
+
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{text-decoration:none;color:var(--text);font-weight:600;font-size:15px;padding:10px 20px;border-radius:25px;transition:0.3s}
+.nav-links a:hover,.nav-links a.active{background:var(--primary);color:#fff}
+.nav-links .login-btn{border:2px solid var(--primary);color:var(--primary);background:none}
+.nav-links .login-btn:hover{background:var(--primary);color:#fff}
+.theme-toggle{width:45px;height:45px;border-radius:50%;border:none;background:var(--card);cursor:pointer;font-size:20px;color:var(--text);box-shadow:0 5px 15px rgba(0,0,0,0.08);transition:0.3s}
+#authStatus{display:flex;align-items:center;gap:12px}
+
+.hero{height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1974&auto=format&fit=crop') center/cover;padding:20px}
+.hero-content h1{color:#fff;font-size:72px;margin-bottom:15px}
+.hero-content h1 span{color:var(--primary)}
+.hero-content p{color:#ddd;font-size:22px;max-width:600px;margin:0 auto 30px;line-height:1.6}
+.hero-btns{display:flex;gap:15px;justify-content:center;flex-wrap:wrap}
+.btn-primary{padding:16px 40px;background:var(--primary);color:#fff;border:none;border-radius:50px;font-size:18px;font-weight:700;cursor:pointer;text-decoration:none;transition:0.3s}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(24,119,242,0.4)}
+.btn-secondary{padding:16px 40px;background:transparent;color:#fff;border:2px solid #fff;border-radius:50px;font-size:18px;font-weight:700;cursor:pointer;text-decoration:none;transition:0.3s}
+.btn-secondary:hover{background:#fff;color:#111;transform:translateY(-3px)}
+
+.features{padding:100px 20px;max-width:1200px;margin:0 auto}
+.features h2{text-align:center;font-size:42px;margin-bottom:50px;color:var(--text)}
+.features h2 span{color:var(--primary)}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px}
+.feat-card{background:var(--card);border-radius:28px;padding:35px;text-align:center;transition:0.3s;box-shadow:0 5px 20px rgba(0,0,0,0.06)}
+.feat-card:hover{transform:translateY(-8px)}
+.feat-card i{font-size:48px;color:var(--primary);margin-bottom:20px}
+.feat-card h3{font-size:22px;margin-bottom:12px;color:var(--text)}
+.feat-card p{color:var(--text2);line-height:1.6}
+
+.cta{background:linear-gradient(135deg,var(--primary),#0d65d9);padding:80px 20px;text-align:center}
+.cta h2{color:#fff;font-size:42px;margin-bottom:15px}
+.cta p{color:rgba(255,255,255,0.85);font-size:18px;margin-bottom:30px}
+.cta .btn-primary{background:#fff;color:var(--primary)}
+.cta .btn-primary:hover{box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+
+footer{background:var(--card);padding:40px 20px;text-align:center;color:var(--text2)}
+footer .social{display:flex;justify-content:center;gap:15px;margin-bottom:20px}
+footer .social a{width:45px;height:45px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--primary);text-decoration:none;font-size:20px;transition:0.3s}
+footer .social a:hover{background:var(--primary);color:#fff}
+
+@media(max-width:768px){
+.hero-content h1{font-size:42px}
+.hero-content p{font-size:18px}
+.features h2{font-size:32px}
+.nav-links a{display:none}
+.nav-links .theme-toggle,.nav-links #authStatus a{display:flex}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="index.html" class="logo">
+<i class="fa-solid fa-music"></i>
+<h1>Groove Lab</h1>
+</a>
+<div class="nav-links">
+<a href="index.html" class="active">Home</a>
+<a href="mainmenu.html">Dashboard</a>
+<a href="community.html">Community</a>
+<a href="upload.html">Upload</a>
+<div id="authStatus">
+<a href="login.html" class="login-btn" id="loginLink">Log In</a>
+<a href="signup.html" class="btn-primary" id="signupLink" style="padding:10px 25px;font-size:14px">Sign Up</a>
+</div>
+<button class="theme-toggle" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<section class="hero">
+<div class="hero-content">
+<h1>Welcome to <span>Groove Lab</span></h1>
+<p>Master music production with interactive lessons, connect with artists worldwide, and share your beats with the community.</p>
+<div class="hero-btns">
+<a href="signup.html" class="btn-primary" id="heroBtn">Get Started Free</a>
+<a href="mainmenu.html" class="btn-secondary">Explore Lessons</a>
+</div>
+</div>
+</section>
+
+<section class="features">
+<h2>Everything You Need to <span>Make Music</span></h2>
+<div class="feature-grid">
+<div class="feat-card"><i class="fa-solid fa-graduation-cap"></i><h3>Interactive Lessons</h3><p>Learn drums, guitar, vocals, and production with video lessons and quizzes that track your progress.</p></div>
+<div class="feat-card"><i class="fa-solid fa-headphones"></i><h3>Music Player</h3><p>Listen to beats, practice tracks, and lesson examples with our built-in audio player.</p></div>
+<div class="feat-card"><i class="fa-solid fa-users"></i><h3>Community</h3><p>Connect with musicians, share feedback, and collaborate on projects in our community forum.</p></div>
+<div class="feat-card"><i class="fa-solid fa-upload"></i><h3>Upload Beats</h3><p>Share your original music with the world. Get feedback and grow your audience.</p></div>
+<div class="feat-card"><i class="fa-solid fa-chart-line"></i><h3>Track Progress</h3><p>Monitor your learning journey with detailed progress tracking across all lessons.</p></div>
+<div class="feat-card"><i class="fa-solid fa-crown"></i><h3>Earn Achievements</h3><p>Complete lessons and challenges to earn badges and unlock advanced content.</p></div>
+</div>
+</section>
+
+<section class="cta">
+<h2>Ready to Start Your Music Journey?</h2>
+<p>Join thousands of musicians already learning on Groove Lab. It's free to start.</p>
+<a href="signup.html" class="btn-primary" id="ctaBtn">Create Free Account</a>
+</section>
+
+<footer>
+<div class="social">
+<a href="#"><i class="fa-brands fa-facebook"></i></a>
+<a href="#"><i class="fa-brands fa-twitter"></i></a>
+<a href="#"><i class="fa-brands fa-instagram"></i></a>
+<a href="#"><i class="fa-brands fa-youtube"></i></a>
+<a href="#"><i class="fa-brands fa-tiktok"></i></a>
+</div>
+<p>&copy; 2026 Groove Lab. All rights reserved.</p>
+</footer>
+
+<script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const icon=document.querySelector('.theme-toggle i');
+icon.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-toggle i').className='fa-solid fa-sun'}
+
+(async function(){
+const user=await API.getMe();
+if(user){
+document.getElementById('authStatus').innerHTML=`<a href="mainmenu.html" style="padding:10px 20px;background:var(--primary);color:#fff;border-radius:25px;text-decoration:none;font-weight:600">Dashboard</a>`;
+document.getElementById('heroBtn').href='mainmenu.html';
+document.getElementById('heroBtn').textContent='Go to Dashboard';
+document.getElementById('ctaBtn').href='mainmenu.html';
+document.getElementById('ctaBtn').textContent='Go to Dashboard';
+}
+})();
+</script>
+</body>
+</html>

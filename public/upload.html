@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Beat - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-icons{display:flex;align-items:center;gap:12px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:900px;margin:0 auto;padding:100px 20px 30px}
+.page-header{margin-bottom:25px}
+.page-header h2{font-size:28px}
+.page-header h2 i{color:var(--primary);margin-right:10px}
+.page-header p{color:var(--text2);margin-top:5px}
+.upload-card{background:var(--card);border-radius:28px;padding:35px;box-shadow:0 5px 20px rgba(0,0,0,0.06)}
+.drop-zone{width:100%;height:220px;border:3px dashed var(--border);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;margin-bottom:25px;background:var(--bg)}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--primary);background:rgba(24,119,242,0.05)}
+.drop-zone i{font-size:50px;color:var(--primary);margin-bottom:15px}
+.drop-zone p{color:var(--text2);font-size:16px}
+.drop-zone .browse{color:var(--primary);font-weight:600;cursor:pointer}
+.drop-zone .formats{color:var(--text2);font-size:13px;margin-top:8px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;font-size:14px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:15px;background:var(--bg);color:var(--text);outline:none;transition:0.3s;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary)}
+.form-group textarea{height:100px;resize:vertical}
+.tag-input{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px solid var(--border);border-radius:12px;background:var(--bg);min-height:50px;align-items:center}
+.tag{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(24,119,242,0.1);color:var(--primary);font-size:13px;font-weight:600}
+.tag i{cursor:pointer;font-size:12px}
+.tag-input input{border:none;outline:none;background:none;padding:8px;flex:1;min-width:100px;color:var(--text);font-size:15px}
+.submit-row{display:flex;gap:15px;margin-top:25px;flex-wrap:wrap}
+.submit-btn{padding:14px 40px;background:var(--primary);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:0.3s;flex:1}
+.submit-btn:hover{opacity:0.9;transform:translateY(-2px)}
+.preview-list{margin-top:30px}
+.preview-card{display:flex;align-items:center;gap:15px;padding:15px;border-radius:16px;background:var(--bg);margin-bottom:10px}
+.preview-card i{font-size:28px;color:var(--primary)}
+.preview-card .info{flex:1}
+.preview-card .info h4{font-size:15px}
+.preview-card .info p{font-size:12px;color:var(--text2)}
+.preview-card .del-btn{width:35px;height:35px;border-radius:50%;border:none;background:rgba(231,76,60,0.1);color:#e74c3c;cursor:pointer;transition:0.3s}
+.preview-card .del-btn:hover{background:#e74c3c;color:#fff}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}.upload-card{padding:20px}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<div class="container">
+<div class="page-header">
+<h2><i class="fa-solid fa-upload"></i> Upload Your Beat</h2>
+<p>Share your music with the world. Supported formats: MP3, WAV, FLAC, AAC.</p>
+</div>
+
+<div class="upload-card">
+<div class="drop-zone" id="dropZone">
+<i class="fa-solid fa-cloud-arrow-up"></i>
+<p>Drag & drop your audio file here or <span class="browse" onclick="document.getElementById('fileInput').click()">browse</span></p>
+<p class="formats">MP3, WAV, FLAC, AAC up to 50MB</p>
+<input type="file" id="fileInput" accept=".mp3,.wav,.flac,.aac" style="display:none" onchange="handleFile(this)">
+</div>
+<div id="filePreview" style="display:none" class="preview-list"></div>
+
+<form id="uploadForm">
+<div class="form-row">
+<div class="form-group"><label>Beat Title</label><input type="text" id="beatTitle" placeholder="e.g. Midnight Groove" required></div>
+<div class="form-group"><label>Genre</label><select id="beatGenre"><option>Hip-Hop</option><option>Lo-Fi</option><option>Trap</option><option>R&B</option><option>Electronic</option><option>Pop</option><option>Rock</option><option>Jazz</option><option>Other</option></select></div>
+</div>
+<div class="form-group"><label>Description</label><textarea id="beatDesc" placeholder="Tell listeners about your beat..."></textarea></div>
+<div class="form-group"><label>Tags</label><div class="tag-input" id="tagContainer"><input type="text" id="tagInput" placeholder="Type and press Enter to add tags..." onkeydown="addTag(event)"></div></div>
+<div class="form-row">
+<div class="form-group"><label>BPM</label><input type="number" id="beatBpm" placeholder="e.g. 140" min="20" max="300"></div>
+<div class="form-group"><label>Key</label><select id="beatKey"><option value="">Select Key</option><option>C Major</option><option>D Major</option><option>E Major</option><option>F Major</option><option>G Major</option><option>A Major</option><option>B Major</option><option>A Minor</option><option>B Minor</option><option>C Minor</option><option>D Minor</option><option>E Minor</option><option>F Minor</option><option>G Minor</option></select></div>
+</div>
+<div class="submit-row"><button type="submit" class="submit-btn"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Beat</button></div>
+</form>
+</div>
+
+<div class="preview-list" id="uploadedTracks"></div>
+</div>
+
+<script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+
+const tags=[];
+function addTag(e){
+if(e.key==='Enter'){
+e.preventDefault();
+const val=document.getElementById('tagInput').value.trim();
+if(val&&!tags.includes(val)){tags.push(val);renderTags()}
+document.getElementById('tagInput').value='';
+}
+}
+function renderTags(){
+const container=document.getElementById('tagContainer');
+const input=document.getElementById('tagInput');
+container.innerHTML=tags.map(t=>`<span class="tag">${t} <i class="fa-solid fa-xmark" onclick="removeTag('${t}')"></i></span>`).join('');
+container.appendChild(input);input.focus();
+}
+function removeTag(t){const idx=tags.indexOf(t);if(idx>-1)tags.splice(idx,1);renderTags()}
+
+const dropZone=document.getElementById('dropZone');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)processFile(f)});
+function handleFile(input){if(input.files[0])processFile(input.files[0])}
+let selectedFile=null;
+function processFile(file){
+selectedFile=file;
+const preview=document.getElementById('filePreview');
+preview.style.display='block';
+const size=(file.size/1024/1024).toFixed(1);
+preview.innerHTML=`<div class="preview-card"><i class="fa-solid fa-file-audio"></i><div class="info"><h4>${file.name}</h4><p>${size} MB</p></div><button class="del-btn" onclick="removeFile()"><i class="fa-solid fa-xmark"></i></button></div>`;
+document.getElementById('fileInput').value='';
+}
+function removeFile(){selectedFile=null;document.getElementById('filePreview').style.display='none';document.getElementById('filePreview').innerHTML=''}
+
+document.getElementById('uploadForm').addEventListener('submit',async function(e){
+e.preventDefault();
+const title=document.getElementById('beatTitle').value.trim();
+if(!title)return alert('Please enter a beat title');
+const formData=new FormData();
+formData.append('title',title);
+formData.append('genre',document.getElementById('beatGenre').value);
+formData.append('description',document.getElementById('beatDesc').value);
+formData.append('tags',tags.join(','));
+formData.append('bpm',document.getElementById('beatBpm').value);
+formData.append('key',document.getElementById('beatKey').value);
+if(selectedFile)formData.append('file',selectedFile);
+try {
+await API.upload('/api/uploads',formData);
+alert('Beat uploaded successfully!');
+this.reset();tags.length=0;renderTags();removeFile();loadTracks();
+} catch(e){alert(e.message)}
+});
+
+async function loadTracks(){
+const container=document.getElementById('uploadedTracks');
+try {
+const data=await API.get('/api/uploads');
+if(data.uploads.length===0){container.innerHTML='<p style="color:var(--text2);text-align:center;padding:20px">No uploads yet. Share your first beat!</p>';return}
+container.innerHTML='<h3 style="margin:20px 0 15px;font-size:20px"><i class="fa-solid fa-clock-rotate-left"></i> Your Uploads</h3>'+data.uploads.map(t=>`
+<div class="preview-card"><i class="fa-solid fa-music"></i><div class="info"><h4>${t.title}</h4><p>${t.genre}${t.bpm?' · '+t.bpm+' BPM':''} · ${new Date(t.created_at).toLocaleDateString()}</p></div>
+<button class="del-btn" onclick="deleteTrack(${t.id})"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+} catch(e){container.innerHTML='<p style="color:var(--text2);text-align:center;padding:20px">Please log in to see your uploads.</p>'}
+}
+
+async function deleteTrack(id){
+if(!confirm('Delete this track?'))return;
+try{await API.delete('/api/uploads/'+id);loadTracks()}catch(e){alert(e.message)}
+}
+loadTracks();
+</script>
+</body>
+</html>

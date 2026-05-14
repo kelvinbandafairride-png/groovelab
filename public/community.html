@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-icons{display:flex;align-items:center;gap:12px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:1100px;margin:0 auto;padding:100px 20px 30px}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;flex-wrap:wrap;gap:15px}
+.page-header h2{font-size:28px}
+.page-header h2 i{color:var(--primary);margin-right:10px}
+.new-post-btn{padding:12px 28px;background:var(--primary);color:#fff;border:none;border-radius:25px;font-weight:600;cursor:pointer;transition:0.3s;font-size:15px}
+.new-post-btn:hover{opacity:0.9;transform:translateY(-2px)}
+.categories{display:flex;gap:10px;margin-bottom:25px;flex-wrap:wrap}
+.cat-btn{padding:8px 20px;border-radius:20px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:14px;font-weight:600;color:var(--text2);transition:0.3s}
+.cat-btn:hover,.cat-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(24,119,242,0.08)}
+.post{background:var(--card);border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 5px 15px rgba(0,0,0,0.05);transition:0.3s}
+.post:hover{transform:translateX(5px)}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.post-header img{width:42px;height:42px;border-radius:50%;object-fit:cover}
+.post-author{font-weight:600;font-size:15px}
+.post-time{color:var(--text2);font-size:12px}
+.post-tag{display:inline-block;padding:4px 12px;border-radius:12px;background:rgba(24,119,242,0.1);color:var(--primary);font-size:12px;font-weight:600;margin-bottom:10px}
+.post h3{margin-bottom:8px;cursor:pointer}
+.post h3:hover{color:var(--primary)}
+.post p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:12px}
+.post-stats{display:flex;gap:20px;color:var(--text2);font-size:13px;padding-top:12px;border-top:1px solid var(--border)}
+.post-stats span{cursor:pointer;transition:0.3s}
+.post-stats span:hover{color:var(--primary)}
+.post-stats i{margin-right:5px}
+.liked{color:var(--primary)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:28px;padding:30px;width:100%;max-width:550px;max-height:90vh;overflow-y:auto}
+.modal h2{margin-bottom:20px}
+.modal input,.modal textarea,.modal select{width:100%;padding:14px;margin-bottom:15px;border:2px solid var(--border);border-radius:12px;font-size:15px;background:var(--bg);color:var(--text);outline:none;transition:0.3s;font-family:inherit}
+.modal input:focus,.modal textarea:focus{border-color:var(--primary)}
+.modal textarea{height:120px;resize:vertical}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-actions button{padding:12px 25px;border-radius:12px;border:none;font-weight:600;cursor:pointer;transition:0.3s}
+.modal-actions .cancel-btn{background:var(--bg);color:var(--text)}
+.modal-actions .submit-btn{background:var(--primary);color:#fff}
+@media(max-width:768px){.page-header{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+<a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<div class="container">
+<div class="page-header">
+<h2><i class="fa-solid fa-comments"></i> Community Forum</h2>
+<button class="new-post-btn" onclick="openModal()"><i class="fa-solid fa-plus"></i> New Post</button>
+</div>
+<div class="categories">
+<button class="cat-btn active" data-cat="all">All</button>
+<button class="cat-btn" data-cat="Production">Production</button>
+<button class="cat-btn" data-cat="Lessons">Lessons</button>
+<button class="cat-btn" data-cat="Feedback">Feedback</button>
+<button class="cat-btn" data-cat="Collaboration">Collaboration</button>
+<button class="cat-btn" data-cat="Equipment">Equipment</button>
+</div>
+<div id="postFeed"><p style="color:var(--text2);text-align:center;padding:40px">Loading posts...</p></div>
+</div>
+
+<div class="modal-overlay" id="postModal">
+<div class="modal">
+<h2>Create a Post</h2>
+<select id="postCategory"><option value="Production">Production</option><option value="Lessons">Lessons</option><option value="Feedback">Feedback</option><option value="Collaboration">Collaboration</option><option value="Equipment">Equipment</option></select>
+<input type="text" id="postTitle" placeholder="Post title...">
+<textarea id="postContent" placeholder="What's on your mind?"></textarea>
+<div class="modal-actions">
+<button class="cancel-btn" onclick="closeModal()">Cancel</button>
+<button class="submit-btn" onclick="createPost()">Post</button>
+</div>
+</div>
+</div>
+
+<script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+
+let currentFilter='all';
+
+async function loadPosts(){
+const url=currentFilter==='all'?'/api/posts':'/api/posts?tag='+currentFilter;
+try {
+const data=await API.get(url);
+const feed=document.getElementById('postFeed');
+feed.innerHTML=data.posts.map(p=>`
+<div class="post">
+<div class="post-header">
+<img src="${p.author_avatar}" alt="">
+<div><div class="post-author">${p.author}</div><div class="post-time">${new Date(p.created_at).toLocaleDateString()}</div></div>
+</div>
+<span class="post-tag">${p.tag}</span>
+<h3>${p.title}</h3>
+<p>${p.content}</p>
+<div class="post-stats">
+<span onclick="toggleLike(${p.id})" class="${p.liked?'liked':''}"><i class="fa-${p.liked?'solid':'regular'} fa-heart"></i> ${p.likes_count}</span>
+<span><i class="fa-regular fa-comment"></i> ${p.comments_count} Comments</span>
+</div>
+</div>
+`).join('');
+} catch(e){document.getElementById('postFeed').innerHTML='<p style="color:var(--text2);text-align:center;padding:40px">Please log in to view the community.</p>'}
+}
+
+async function toggleLike(postId){
+try {
+const data=await API.post('/api/posts/'+postId+'/like',{});
+loadPosts();
+} catch(e){alert('Please log in first')}
+}
+
+document.querySelectorAll('.cat-btn').forEach(btn=>{
+btn.addEventListener('click',function(){
+document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+this.classList.add('active');
+currentFilter=this.dataset.cat;
+loadPosts();
+});
+});
+
+function openModal(){document.getElementById('postModal').classList.add('show')}
+function closeModal(){document.getElementById('postModal').classList.remove('show')}
+document.getElementById('postModal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+async function createPost(){
+const title=document.getElementById('postTitle').value.trim();
+const content=document.getElementById('postContent').value.trim();
+const tag=document.getElementById('postCategory').value;
+if(!title||!content)return alert('Please fill in all fields');
+try {
+await API.post('/api/posts',{title,content,tag});
+document.getElementById('postTitle').value='';
+document.getElementById('postContent').value='';
+closeModal();
+loadPosts();
+} catch(e){alert(e.message)}
+}
+
+loadPosts();
+</script>
+</body>
+</html>

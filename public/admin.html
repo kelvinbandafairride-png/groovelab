@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-icons{display:flex;align-items:center;gap:12px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.badge-admin{background:#e74c3c;color:#fff;font-size:11px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.container{max-width:1200px;margin:0 auto;padding:100px 20px 30px}
+.page-header{margin-bottom:25px}
+.page-header h2{font-size:28px}
+.page-header h2 i{color:var(--primary);margin-right:10px}
+.page-header p{color:var(--text2);margin-top:5px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:30px}
+.stat-card{background:var(--card);border-radius:20px;padding:22px;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
+.stat-card .stat-icon{width:45px;height:45px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px;color:#fff}
+.stat-card .stat-num{font-size:28px;font-weight:700}
+.stat-card .stat-label{color:var(--text2);font-size:14px;margin-top:3px}
+.bg-blue{background:var(--primary)}.bg-green{background:#42b72a}.bg-orange{background:#e67e22}.bg-red{background:#e74c3c}.bg-purple{background:#9b59b6}
+.admin-grid{display:grid;grid-template-columns:2fr 1fr;gap:25px}
+.table-card{background:var(--card);border-radius:24px;padding:25px;box-shadow:0 5px 15px rgba(0,0,0,0.05);margin-bottom:20px}
+.table-card h3{margin-bottom:18px;font-size:20px}
+.table-card h3 i{color:var(--primary);margin-right:10px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 8px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+th{color:var(--text2);font-weight:600;font-size:13px;text-transform:uppercase}
+td img{width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:8px;vertical-align:middle}
+.status{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600}
+.status.active{background:rgba(66,183,42,0.15);color:#42b72a}
+.status.banned{background:rgba(231,76,60,0.15);color:#e74c3c}
+.action-btn{padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:0.3s;margin-right:4px}
+.action-btn.ban{background:rgba(231,76,60,0.1);color:#e74c3c}
+.action-btn.ban:hover{background:#e74c3c;color:#fff}
+.action-btn.warn{background:rgba(230,126,34,0.1);color:#e67e22}
+.action-btn.warn:hover{background:#e67e22;color:#fff}
+@media(max-width:768px){.admin-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<div class="container">
+<div class="page-header">
+<h2><i class="fa-solid fa-shield-halved"></i> Admin Dashboard <span class="badge-admin">Admin</span></h2>
+<p id="adminInfo">Loading admin data...</p>
+</div>
+<div class="stats-grid" id="statsGrid"></div>
+<div class="admin-grid">
+<div class="left-col">
+<div class="table-card"><h3><i class="fa-solid fa-users"></i> User Management</h3><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="userTable"></tbody></table></div>
+</div>
+<div class="right-col">
+<div class="table-card"><h3><i class="fa-solid fa-chart-line"></i> Platform Activity</h3><div id="activitySection"></div></div>
+</div>
+</div>
+</div>
+
+<script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+
+async function loadAdmin(){
+try {
+const user=await API.getMe();
+if(!user||user.role!=='admin'){document.getElementById('adminInfo').textContent='Admin access only. Redirecting...';setTimeout(()=>window.location='login.html',2000);return}
+document.getElementById('adminInfo').textContent='Welcome, '+user.first_name+'. Manage the platform below.';
+
+const stats=await API.get('/api/admin/stats');
+document.getElementById('statsGrid').innerHTML=`
+<div class="stat-card"><div class="stat-icon bg-blue"><i class="fa-solid fa-users"></i></div><div class="stat-num">${stats.users}</div><div class="stat-label">Total Users</div></div>
+<div class="stat-card"><div class="stat-icon bg-green"><i class="fa-solid fa-book"></i></div><div class="stat-num">${stats.lessons}</div><div class="stat-label">Total Lessons</div></div>
+<div class="stat-card"><div class="stat-icon bg-orange"><i class="fa-solid fa-music"></i></div><div class="stat-num">${stats.uploads}</div><div class="stat-label">Beats Uploaded</div></div>
+<div class="stat-card"><div class="stat-icon bg-red"><i class="fa-solid fa-flag"></i></div><div class="stat-num">${stats.reports}</div><div class="stat-label">Banned Users</div></div>
+<div class="stat-card"><div class="stat-icon bg-purple"><i class="fa-solid fa-comment"></i></div><div class="stat-num">${stats.posts}</div><div class="stat-label">Forum Posts</div></div>
+<div class="stat-card"><div class="stat-icon bg-blue"><i class="fa-solid fa-user-plus"></i></div><div class="stat-num">${stats.todayUsers}</div><div class="stat-label">New Today</div></div>`;
+
+const usersData=await API.get('/api/admin/users');
+const tbody=document.getElementById('userTable');
+tbody.innerHTML=usersData.users.map(u=>`
+<tr>
+<td><img src="${u.avatar}"> ${u.first_name} ${u.surname}</td>
+<td>${u.role}</td>
+<td><span class="status ${u.banned?'banned':'active'}">${u.banned?'Banned':'Active'}</span></td>
+<td>
+<button class="action-btn warn" onclick="warnUser(${u.id})">Warn</button>
+<button class="action-btn ban" onclick="banUser(${u.id})">${u.banned?'Unban':'Ban'}</button>
+</td>
+</tr>`).join('');
+
+document.getElementById('activitySection').innerHTML=`
+<div style="margin-bottom:12px"><p style="display:flex;justify-content:space-between;font-size:14px"><span>Total Users</span><span>${stats.users}</span></p><div style="height:8px;background:var(--bg);border-radius:20px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${Math.min(100,stats.users/10)}%;background:var(--primary);border-radius:20px"></div></div></div>
+<div style="margin-bottom:12px"><p style="display:flex;justify-content:space-between;font-size:14px"><span>Total Uploads</span><span>${stats.uploads}</span></p><div style="height:8px;background:var(--bg);border-radius:20px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${Math.min(100,stats.uploads/5)}%;background:#42b72a;border-radius:20px"></div></div></div>
+<div><p style="display:flex;justify-content:space-between;font-size:14px"><span>Forum Posts</span><span>${stats.posts}</span></p><div style="height:8px;background:var(--bg);border-radius:20px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${Math.min(100,stats.posts/2)}%;background:#e67e22;border-radius:20px"></div></div></div>`;
+} catch(e){document.getElementById('adminInfo').textContent='Error loading admin data. Make sure you are logged in as admin.'}
+}
+
+async function banUser(id){
+try {
+const data=await API.post('/api/admin/users/'+id+'/ban',{});
+loadAdmin();
+} catch(e){alert(e.message)}
+}
+
+async function warnUser(id){
+try {
+await API.post('/api/admin/users/'+id+'/warn',{});
+alert('Warning sent to user');
+} catch(e){alert(e.message)}
+}
+
+loadAdmin();
+</script>
+</body>
+</html>

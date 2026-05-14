@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Lessons - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text)}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{font-size:32px;color:var(--primary)}
+.nav-icons{display:flex;align-items:center;gap:10px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.container{display:flex;gap:20px;padding:95px 20px 90px;max-width:1300px;margin:0 auto}
+.sidebar{width:22%;position:sticky;top:95px;height:fit-content}
+.menu{background:var(--card);border-radius:20px;padding:15px;box-shadow:0 5px 20px rgba(0,0,0,0.06)}
+.menu-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;cursor:pointer;transition:0.3s;color:var(--text);text-decoration:none}
+.menu-item:hover,.menu-item.active{background:var(--bg)}
+.menu-item i{color:var(--primary);width:20px}
+.menu-item .check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin-left:auto;font-size:10px;flex-shrink:0}
+.menu-item .check.done{border-color:#42b72a;background:#42b72a;color:#fff}
+.content{width:78%}
+.video-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:24px;overflow:hidden;background:#000;margin-bottom:20px}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.lesson-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.lesson-header h2{font-size:28px}
+.complete-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;background:rgba(66,183,42,0.15);color:#42b72a;font-weight:600;font-size:14px}
+.progress-card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
+.progress-card h3{margin-bottom:12px;font-size:18px}
+.progress-card h3 i{color:var(--primary);margin-right:8px}
+.progress-row{display:flex;align-items:center;gap:15px;margin-bottom:10px}
+.progress-row .pbar{flex:1;height:10px;background:var(--bg);border-radius:20px;overflow:hidden}
+.progress-row .pbar .fill{height:100%;background:var(--primary);border-radius:20px;transition:width 0.5s}
+.progress-row .pct{font-size:14px;font-weight:600;color:var(--primary);min-width:40px}
+.quiz-card{background:var(--card);border-radius:20px;padding:25px;margin:20px 0;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
+.quiz-card h3{margin-bottom:15px;font-size:20px}
+.quiz-card h3 i{color:var(--primary);margin-right:8px}
+.quiz-q{margin-bottom:20px;padding:18px;border-radius:16px;background:var(--bg)}
+.quiz-q .q-title{font-weight:600;margin-bottom:12px;font-size:16px}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:12px 16px;margin-bottom:8px;border-radius:12px;border:2px solid var(--border);cursor:pointer;transition:0.3s;background:var(--card)}
+.quiz-opt:hover{border-color:var(--primary)}
+.quiz-opt input[type="radio"]{accent-color:var(--primary)}
+.quiz-opt.correct{border-color:#42b72a;background:rgba(66,183,42,0.08)}
+.quiz-opt.wrong{border-color:#e74c3c;background:rgba(231,76,60,0.08)}
+.quiz-result{padding:15px;border-radius:12px;margin-top:15px;font-weight:600;display:none}
+.quiz-result.pass{display:block;background:rgba(66,183,42,0.12);color:#42b72a}
+.quiz-result.fail{display:block;background:rgba(231,76,60,0.12);color:#e74c3c}
+.submit-quiz{padding:12px 30px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:0.3s}
+.submit-quiz:hover{opacity:0.9}
+.lesson-nav{display:flex;justify-content:space-between;gap:15px;margin-top:25px}
+.lesson-nav button{padding:14px 30px;border-radius:14px;font-weight:600;cursor:pointer;transition:0.3s;border:none;flex:1}
+.lesson-nav .prev-btn{background:var(--bg);color:var(--text)}
+.lesson-nav .next-btn{background:var(--primary);color:#fff}
+.lesson-nav button:hover{opacity:0.85}
+@media(max-width:900px){.sidebar{display:none}.content{width:100%}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
+<a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+</div>
+</nav>
+
+<div class="container">
+<div class="sidebar"><div class="menu" id="lessonMenu"><p style="padding:10px;color:var(--text2)">Loading...</p></div></div>
+<div class="content">
+<div class="video-wrap"><iframe id="videoFrame" src="" allowfullscreen></iframe></div>
+<div class="lesson-header">
+<div><h2 id="lessonTitle">Loading...</h2><p style="color:var(--text2);margin-top:5px" id="lessonDesc"></p></div>
+<div id="completionBadge"></div>
+</div>
+<div class="progress-card"><h3><i class="fa-solid fa-chart-simple"></i> Course Progress</h3>
+<div class="progress-row"><span style="font-weight:600">Overall</span><div class="pbar"><div class="fill" id="overallProgress" style="width:0%"></div></div><span class="pct" id="progressPct">0%</span></div></div>
+<div id="quizArea"></div>
+<div class="lesson-nav">
+<button class="prev-btn" onclick="changeLesson(-1)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+<button class="next-btn" onclick="changeLesson(1)">Next <i class="fa-solid fa-arrow-right"></i></button>
+</div>
+</div></div>
+
+<script>
+const quizData=[
+{q:'What is the most important skill for beginners?',options:['Speed','Stick control','Volume','Drum solos'],answer:1},
+{q:'What tool helps musicians maintain consistent tempo?',options:['Amplifier','Metronome','Equalizer','Reverb'],answer:1},
+{q:'What is a fill in drumming?',options:['A pause','A transition pattern','The main beat','A cymbal crash'],answer:1},
+{q:'Which genre heavily uses syncopated grooves?',options:['Classical','Jazz','Country','Opera'],answer:1}
+];
+
+let lessons=[];
+let currentLesson=0;
+
+async function loadLessons(){
+try {
+const data=await API.get('/api/lessons');
+lessons=data.lessons;
+if(lessons.length>0){renderMenu();loadLesson(currentLesson);}
+} catch(e){
+document.getElementById('lessonTitle').textContent='Please log in to access lessons';
+}
+}
+
+function loadLesson(idx){
+if(!lessons.length)return;
+const l=lessons[idx];
+document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+l.video_url;
+document.getElementById('lessonTitle').textContent=l.title;
+document.getElementById('lessonDesc').textContent=l.description;
+renderQuiz(idx);
+renderMenu();
+renderProgress();
+const badge=document.getElementById('completionBadge');
+badge.innerHTML=l.completed?'<span class="complete-badge"><i class="fa-solid fa-check-circle"></i> Completed</span>':'';
+}
+
+function renderQuiz(idx){
+const l=lessons[idx];
+const q=quizData[idx];
+if(!q){document.getElementById('quizArea').innerHTML='';return}
+const area=document.getElementById('quizArea');
+area.innerHTML=`
+<div class="quiz-card">
+<h3><i class="fa-solid fa-circle-question"></i> Quick Quiz</h3>
+<div class="quiz-q">
+<div class="q-title">${q.q}</div>
+${q.options.map((o,i)=>`
+<label class="quiz-opt"><input type="radio" name="q" value="${i}" ${l.completed?'disabled':''}><span>${o}</span></label>
+`).join('')}
+</div>
+${l.completed?'<div class="quiz-result pass" style="display:block"> Correct! You passed this quiz.</div>':''}
+<button class="submit-quiz" onclick="checkQuiz(${idx})" ${l.completed?'style="display:none"':''}>Submit Answer</button>
+</div>`;
+}
+
+async function checkQuiz(idx){
+const sel=document.querySelector('input[name="q"]:checked');
+if(!sel)return alert('Please select an answer');
+const ans=parseInt(sel.value);
+const correct=ans===quizData[idx].answer;
+try {
+await API.post('/api/lessons/'+lessons[idx].id+'/complete',{passed:correct});
+loadLessons();
+} catch(e){alert(e.message)}
+}
+
+function changeLesson(dir){
+const next=currentLesson+dir;
+if(next<0||next>=lessons.length)return;
+currentLesson=next;
+loadLesson(currentLesson);
+}
+
+function renderMenu(){
+const menu=document.getElementById('lessonMenu');
+menu.innerHTML='<div style="font-weight:700;padding:10px;margin-bottom:10px;color:var(--primary)">Drum Lessons</div>'+
+lessons.map((l,i)=>`
+<div class="menu-item ${i===currentLesson?'active':''}" onclick="currentLesson=${i};loadLesson(${i})">
+<i class="fa-solid fa-drum"></i><span>${l.title}</span>
+<div class="check ${l.completed?'done':''}">${l.completed?'✓':''}</div>
+</div>`).join('');
+}
+
+function renderProgress(){
+const done=lessons.filter(l=>l.completed).length;
+const pct=lessons.length?Math.round((done/lessons.length)*100):0;
+document.getElementById('overallProgress').style.width=pct+'%';
+document.getElementById('progressPct').textContent=pct+'%';
+}
+
+loadLessons();
+</script>
+</body>
+</html>
