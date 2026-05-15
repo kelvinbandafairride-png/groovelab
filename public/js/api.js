@@ -31,6 +31,12 @@ const API = {
     if (!res.ok) throw new Error(data.error || 'Request failed');
     return data;
   },
+  async del(url) {
+    const res = await fetch(url, { method: 'DELETE' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  },
   async upload(url, formData) {
     const res = await fetch(url, {
       method: 'POST',

@@ -49,6 +49,26 @@ td img{width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:8p
 .action-btn.ban:hover{background:#e74c3c;color:#fff}
 .action-btn.warn{background:rgba(230,126,34,0.1);color:#e67e22}
 .action-btn.warn:hover{background:#e67e22;color:#fff}
+.action-btn.delete{background:rgba(231,76,60,0.15);color:#e74c3c}
+.action-btn.delete:hover{background:#e74c3c;color:#fff}
+.action-btn.edit{background:rgba(24,119,242,0.1);color:var(--primary)}
+.action-btn.edit:hover{background:var(--primary);color:#fff}
+.action-btn.add{background:#42b72a;color:#fff}
+.action-btn.add:hover{background:#36a020}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:2000}
+.modal.show{display:flex}
+.modal-content{background:var(--card);border-radius:24px;padding:30px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal-content h3{font-size:22px;margin-bottom:20px}
+.modal-content h3 i{color:var(--primary);margin-right:10px}
+.modal-content input,.modal-content textarea,.modal-content select{width:100%;padding:12px 16px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none;margin-bottom:12px;transition:0.3s}
+.modal-content input:focus,.modal-content textarea:focus,.modal-content select:focus{border-color:var(--primary)}
+.modal-content textarea{resize:vertical;min-height:80px}
+.modal-actions{display:flex;gap:10px;margin-top:16px}
+.modal-actions button{flex:1;padding:12px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:0.3s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{opacity:0.9}
+.btn-secondary{background:var(--bg);color:var(--text)}
+.btn-secondary:hover{opacity:0.8}
 @media(max-width:768px){.admin-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -70,12 +90,41 @@ td img{width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:8p
 <p id="adminInfo">Loading admin data...</p>
 </div>
 <div class="stats-grid" id="statsGrid"></div>
-<div class="admin-grid">
-<div class="left-col">
-<div class="table-card"><h3><i class="fa-solid fa-users"></i> User Management</h3><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="userTable"></tbody></table></div>
+
+<div class="table-card">
+<h3><i class="fa-solid fa-users"></i> User Management</h3>
+<table><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="userTable"></tbody></table>
 </div>
-<div class="right-col">
-<div class="table-card"><h3><i class="fa-solid fa-chart-line"></i> Platform Activity</h3><div id="activitySection"></div></div>
+
+<div class="table-card">
+<h3><i class="fa-solid fa-graduation-cap"></i> Lessons Management <button class="action-btn add" onclick="showLessonModal()" style="float:right"><i class="fa-solid fa-plus"></i> Add Lesson</button></h3>
+<table><thead><tr><th>Title</th><th>Category</th><th>Order</th><th>Actions</th></tr></thead><tbody id="lessonTable"></tbody></table>
+</div>
+
+<div class="table-card">
+<h3><i class="fa-solid fa-trophy"></i> User Progress & Achievements</h3>
+<table><thead><tr><th>User</th><th>Email</th><th>Completed Lessons</th><th>Achievements</th><th>Joined</th></tr></thead><tbody id="progressTable"></tbody></table>
+</div>
+
+<div class="table-card">
+<h3><i class="fa-solid fa-chart-line"></i> Platform Activity</h3>
+<div id="activitySection"></div>
+</div>
+</div>
+
+<!-- Lesson Modal -->
+<div class="modal" id="lessonModal">
+<div class="modal-content">
+<h3><i class="fa-solid fa-book"></i> <span id="lessonModalTitle">Add Lesson</span></h3>
+<input type="hidden" id="lessonId">
+<input type="text" id="lessonTitle" placeholder="Lesson Title">
+<textarea id="lessonDesc" placeholder="Description"></textarea>
+<input type="text" id="lessonCategory" placeholder="Category (e.g. Drum, Guitar, Piano)">
+<input type="text" id="lessonVideo" placeholder="YouTube Video ID (e.g. 2SUwOgmvzK4)">
+<input type="number" id="lessonOrder" placeholder="Order Index (0, 1, 2...)">
+<div class="modal-actions">
+<button class="btn-secondary" onclick="closeLessonModal()">Cancel</button>
+<button class="btn-primary" onclick="saveLesson()">Save Lesson</button>
 </div>
 </div>
 </div>
@@ -104,29 +153,158 @@ document.getElementById('statsGrid').innerHTML=`
 <div class="stat-card"><div class="stat-icon bg-purple"><i class="fa-solid fa-comment"></i></div><div class="stat-num">${stats.posts}</div><div class="stat-label">Forum Posts</div></div>
 <div class="stat-card"><div class="stat-icon bg-blue"><i class="fa-solid fa-user-plus"></i></div><div class="stat-num">${stats.todayUsers}</div><div class="stat-label">New Today</div></div>`;
 
+// Users
 const usersData=await API.get('/api/admin/users');
-const tbody=document.getElementById('userTable');
-tbody.innerHTML=usersData.users.map(u=>`
+document.getElementById('userTable').innerHTML=usersData.users.map(u=>`
 <tr>
 <td><img src="${u.avatar}"> ${u.first_name} ${u.surname}</td>
+<td style="font-size:13px;color:var(--text2)">${u.email}</td>
 <td>${u.role}</td>
 <td><span class="status ${u.banned?'banned':'active'}">${u.banned?'Banned':'Active'}</span></td>
 <td>
-<button class="action-btn warn" onclick="warnUser(${u.id})">Warn</button>
-<button class="action-btn ban" onclick="banUser(${u.id})">${u.banned?'Unban':'Ban'}</button>
+<button class="action-btn warn" onclick="warnUser(${u.id})" title="Send Warning"><i class="fa-solid fa-bell"></i></button>
+<button class="action-btn ban" onclick="banUser(${u.id})">${u.banned?'<i class="fa-solid fa-check"></i> Unban':'<i class="fa-solid fa-ban"></i> Ban'}</button>
+<button class="action-btn delete" onclick="deleteUser(${u.id})" title="Delete User"><i class="fa-solid fa-trash"></i></button>
 </td>
 </tr>`).join('');
 
+// Lessons
+loadLessons();
+
+// Progress
+loadProgress();
+
+// Activity
 document.getElementById('activitySection').innerHTML=`
 <div style="margin-bottom:12px"><p style="display:flex;justify-content:space-between;font-size:14px"><span>Total Users</span><span>${stats.users}</span></p><div style="height:8px;background:var(--bg);border-radius:20px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${Math.min(100,stats.users/10)}%;background:var(--primary);border-radius:20px"></div></div></div>
 <div style="margin-bottom:12px"><p style="display:flex;justify-content:space-between;font-size:14px"><span>Total Uploads</span><span>${stats.uploads}</span></p><div style="height:8px;background:var(--bg);border-radius:20px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${Math.min(100,stats.uploads/5)}%;background:#42b72a;border-radius:20px"></div></div></div>
 <div><p style="display:flex;justify-content:space-between;font-size:14px"><span>Forum Posts</span><span>${stats.posts}</span></p><div style="height:8px;background:var(--bg);border-radius:20px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${Math.min(100,stats.posts/2)}%;background:#e67e22;border-radius:20px"></div></div></div>`;
-} catch(e){document.getElementById('adminInfo').textContent='Error loading admin data. Make sure you are logged in as admin.'}
+} catch(e){document.getElementById('adminInfo').textContent='Error loading admin data. Make sure you are logged in as admin.';console.error(e)}
 }
 
+// ========== LESSONS MANAGEMENT ==========
+async function loadLessons(){
+try {
+const data=await API.get('/api/admin/lessons');
+document.getElementById('lessonTable').innerHTML=data.lessons.map(l=>`
+<tr>
+<td>${l.title}</td>
+<td><span class="status active">${l.category}</span></td>
+<td>${l.order_index}</td>
+<td>
+<button class="action-btn edit" onclick="editLesson(${l.id})"><i class="fa-solid fa-pen"></i> Edit</button>
+<button class="action-btn delete" onclick="deleteLesson(${l.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+</td>
+</tr>`).join('');
+} catch(e){console.error(e)}
+}
+
+function showLessonModal(data){
+document.getElementById('lessonModal').classList.add('show');
+if(data){
+document.getElementById('lessonModalTitle').textContent='Edit Lesson';
+document.getElementById('lessonId').value=data.id;
+document.getElementById('lessonTitle').value=data.title;
+document.getElementById('lessonDesc').value=data.description;
+document.getElementById('lessonCategory').value=data.category;
+document.getElementById('lessonVideo').value=data.video_url;
+document.getElementById('lessonOrder').value=data.order_index;
+} else {
+document.getElementById('lessonModalTitle').textContent='Add Lesson';
+document.getElementById('lessonId').value='';
+document.getElementById('lessonTitle').value='';
+document.getElementById('lessonDesc').value='';
+document.getElementById('lessonCategory').value='';
+document.getElementById('lessonVideo').value='';
+document.getElementById('lessonOrder').value='0';
+}
+}
+
+function closeLessonModal(){
+document.getElementById('lessonModal').classList.remove('show');
+}
+
+async function saveLesson(){
+const id=document.getElementById('lessonId').value;
+const title=document.getElementById('lessonTitle').value.trim();
+const description=document.getElementById('lessonDesc').value.trim();
+const category=document.getElementById('lessonCategory').value.trim();
+const video_url=document.getElementById('lessonVideo').value.trim();
+const order_index=parseInt(document.getElementById('lessonOrder').value)||0;
+if(!title||!description||!category||!video_url){alert('All fields required');return}
+try {
+if(id){
+await API.put('/api/admin/lessons/'+id,{title,description,category,video_url,order_index});
+} else {
+await API.post('/api/admin/lessons',{title,description,category,video_url,order_index});
+}
+closeLessonModal();
+loadLessons();
+loadProgress();
+} catch(e){alert(e.message)}
+}
+
+async function editLesson(id){
+try {
+const data=await API.get('/api/admin/lessons');
+const lesson=data.lessons.find(l=>l.id==id);
+if(lesson) showLessonModal(lesson);
+} catch(e){alert(e.message)}
+}
+
+async function deleteLesson(id){
+if(!confirm('Delete this lesson? This will also remove all progress for this lesson.')) return;
+try {
+await API.del('/api/admin/lessons/'+id);
+loadLessons();
+loadProgress();
+} catch(e){alert(e.message)}
+}
+
+// ========== USER PROGRESS ==========
+async function loadProgress(){
+try {
+const data=await API.get('/api/admin/progress');
+const tbody=document.getElementById('progressTable');
+tbody.innerHTML=data.users.map(u=>{
+const prog=data.progressByUser[u.id];
+const ach=data.achievementsByUser[u.id];
+const completed=prog?prog.completed:0;
+const badges=ach?ach.map(a=>'<span class="status active" style="margin:2px;display:inline-block">'+a.badge_name+'</span>').join(''):'<span style="color:var(--text2)">None</span>';
+return `<tr>
+<td><img src="${u.avatar}"> ${u.first_name} ${u.surname}</td>
+<td style="font-size:13px;color:var(--text2)">${u.email}</td>
+<td>${completed} / ${data.lessonsCount||'?'}</td>
+<td>${badges}</td>
+<td style="font-size:13px;color:var(--text2)">${new Date(u.joined_at).toLocaleDateString()}</td>
+</tr>`;
+}).join('');
+// Show total lessons count
+const lessonsData=await API.get('/api/admin/lessons');
+const rows=document.querySelectorAll('#progressTable tr');
+// Store lessons count for display
+data.lessonsCount=lessonsData.lessons.length;
+// Re-render with count
+tbody.innerHTML=data.users.map(u=>{
+const prog=data.progressByUser[u.id];
+const ach=data.achievementsByUser[u.id];
+const completed=prog?prog.completed:0;
+const badges=ach?ach.map(a=>'<span class="status active" style="margin:2px;display:inline-block">'+a.badge_name+'</span>').join(''):'<span style="color:var(--text2)">None</span>';
+return `<tr>
+<td><img src="${u.avatar}"> ${u.first_name} ${u.surname}</td>
+<td style="font-size:13px;color:var(--text2)">${u.email}</td>
+<td>${completed} / ${lessonsData.lessons.length}</td>
+<td>${badges}</td>
+<td style="font-size:13px;color:var(--text2)">${new Date(u.joined_at).toLocaleDateString()}</td>
+</tr>`;
+}).join('');
+} catch(e){console.error(e)}
+}
+
+// ========== USER ACTIONS ==========
 async function banUser(id){
 try {
-const data=await API.post('/api/admin/users/'+id+'/ban',{});
+await API.post('/api/admin/users/'+id+'/ban',{});
 loadAdmin();
 } catch(e){alert(e.message)}
 }
@@ -137,6 +315,19 @@ await API.post('/api/admin/users/'+id+'/warn',{});
 alert('Warning sent to user');
 } catch(e){alert(e.message)}
 }
+
+async function deleteUser(id){
+if(!confirm('Permanently delete this user and all their data? This cannot be undone.')) return;
+try {
+await API.del('/api/admin/users/'+id);
+loadAdmin();
+} catch(e){alert(e.message)}
+}
+
+// Close modal on backdrop click
+document.getElementById('lessonModal').addEventListener('click',function(e){
+if(e.target===this) closeLessonModal();
+});
 
 loadAdmin();
 </script>

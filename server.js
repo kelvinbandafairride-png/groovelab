@@ -335,6 +335,80 @@ app.get('/api/admin/reports', requireAdmin, async (req, res) => {
   res.json({ reports });
 });
 
+// ===================== LESSON MANAGEMENT (ADMIN) ===================== //
+
+app.get('/api/admin/lessons', requireAdmin, async (req, res) => {
+  const lessons = await query('SELECT * FROM lessons ORDER BY order_index');
+  res.json({ lessons });
+});
+
+app.post('/api/admin/lessons', requireAdmin, async (req, res) => {
+  const { title, description, category, video_url, order_index } = req.body;
+  if (!title || !description || !category || !video_url) {
+    return res.status(400).json({ error: 'Title, description, category, and video_url are required' });
+  }
+  const result = await query('INSERT INTO lessons (title, description, category, video_url, order_index) VALUES (?, ?, ?, ?, ?)',
+    [title, description, category, video_url, order_index || 0]);
+  const lesson = await get('SELECT * FROM lessons WHERE id = ?', [result.lastInsertId]);
+  res.json({ lesson });
+});
+
+app.put('/api/admin/lessons/:id', requireAdmin, async (req, res) => {
+  const lesson = await get('SELECT * FROM lessons WHERE id = ?', [req.params.id]);
+  if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
+  const { title, description, category, video_url, order_index } = req.body;
+  await query('UPDATE lessons SET title = ?, description = ?, category = ?, video_url = ?, order_index = ? WHERE id = ?',
+    [title || lesson.title, description || lesson.description, category || lesson.category, video_url || lesson.video_url, order_index ?? lesson.order_index, req.params.id]);
+  const updated = await get('SELECT * FROM lessons WHERE id = ?', [req.params.id]);
+  res.json({ lesson: updated });
+});
+
+app.delete('/api/admin/lessons/:id', requireAdmin, async (req, res) => {
+  const lesson = await get('SELECT * FROM lessons WHERE id = ?', [req.params.id]);
+  if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
+  await query('DELETE FROM lesson_progress WHERE lesson_id = ?', [req.params.id]);
+  await query('DELETE FROM lessons WHERE id = ?', [req.params.id]);
+  res.json({ ok: true });
+});
+
+// ===================== USER PROGRESS (ADMIN) ===================== //
+
+app.get('/api/admin/progress', requireAdmin, async (req, res) => {
+  const users = await query("SELECT id, first_name, surname, email, avatar, banned, joined_at FROM users ORDER BY joined_at DESC");
+  const progress = await query(`SELECT lp.*, l.title as lesson_title, l.category FROM lesson_progress lp JOIN lessons l ON lp.lesson_id = l.id ORDER BY lp.user_id, lp.completed_at`);
+  const achievements = await query(`SELECT a.*, u.first_name || ' ' || u.surname as user_name FROM achievements a JOIN users u ON a.user_id = u.id ORDER BY a.earned_at`);
+  const progressByUser = {};
+  for (const p of progress) {
+    if (!progressByUser[p.user_id]) progressByUser[p.user_id] = { completed: 0, lessons: [] };
+    progressByUser[p.user_id].completed++;
+    progressByUser[p.user_id].lessons.push(p);
+  }
+  const achievementsByUser = {};
+  for (const a of achievements) {
+    if (!achievementsByUser[a.user_id]) achievementsByUser[a.user_id] = [];
+    achievementsByUser[a.user_id].push(a);
+  }
+  res.json({ users, progressByUser, achievementsByUser });
+});
+
+// ===================== DELETE USER (ADMIN) ===================== //
+
+app.delete('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  const user = await get('SELECT * FROM users WHERE id = ?', [req.params.id]);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  const id = req.params.id;
+  await query('DELETE FROM notifications WHERE user_id = ?', [id]);
+  await query('DELETE FROM achievements WHERE user_id = ?', [id]);
+  await query('DELETE FROM lesson_progress WHERE user_id = ?', [id]);
+  const userPosts = await query('SELECT id FROM posts WHERE user_id = ?', [id]);
+  for (const p of userPosts) await query('DELETE FROM likes WHERE post_id = ?', [p.id]);
+  await query('DELETE FROM comments WHERE user_id = ?', [id]);
+  await query('DELETE FROM posts WHERE user_id = ?', [id]);
+  await query('DELETE FROM uploads WHERE user_id = ?', [id]);
+  await query('DELETE FROM users WHERE id = ?', [id]);
+  res.json({ ok: true });
+});
+
 // ===================== SEARCH ===================== //
 
 app.get('/api/search', async (req, res) => {
