@@ -9,7 +9,9 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
 :root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
-body{background:var(--bg);color:var(--text)}
+body{background:var(--bg);color:var(--text);background-image:radial-gradient(circle at 10% 20%,rgba(24,119,242,0.04) 0%,transparent 50%),radial-gradient(circle at 90% 80%,rgba(24,119,242,0.03) 0%,transparent 50%);min-height:100vh}
+body::before{content:'♪ ♫ ♩ ♬';position:fixed;font-size:120px;color:rgba(24,119,242,0.03);top:-20px;right:-20px;transform:rotate(25deg);pointer-events:none;z-index:0;letter-spacing:40px}
+body::after{content:'♩ ♪ ♫ ♬';position:fixed;font-size:90px;color:rgba(24,119,242,0.025);bottom:40px;left:-10px;transform:rotate(-15deg);pointer-events:none;z-index:0;letter-spacing:30px}
 body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
 .navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
 body.dark .navbar{background:rgba(22,27,34,0.92)}
@@ -202,7 +204,7 @@ const grid=document.getElementById('lessonGrid');
 grid.innerHTML=categoryLessons.map((l,i)=>{
 const globalIdx=lessons.indexOf(l);
 return `<div class="lesson-card" onclick="openLesson(${globalIdx})">
-<div class="thumb"><div class="play-overlay"><i class="fa-solid fa-play-circle"></i></div></div>
+<div class="thumb"><img src="https://img.youtube.com/vi/${l.video_url}/mqdefault.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"><div class="play-overlay"><i class="fa-solid fa-play-circle"></i></div></div>
 <div class="info">
 <span class="cat-tag">${l.category}</span>
 <h3>${l.title}</h3>

@@ -37,7 +37,7 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 .menu-item:hover{background:var(--bg);transform:translateX(5px)}
 .menu-item i{color:var(--primary);font-size:22px}
 .menu-item span{font-size:16px;font-weight:600}
-.feed{width:52%}
+.feed{flex:1}
 .hero{height:280px;border-radius:32px;overflow:hidden;position:relative;margin-bottom:25px;box-shadow:0 10px 30px var(--shadow)}
 .hero img{width:100%;height:100%;object-fit:cover}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);display:flex;align-items:flex-end;padding:30px}
@@ -112,13 +112,7 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 <div class="container">
 <div class="left-sidebar">
 <div class="side-menu">
-<a href="lessons.html" class="menu-item"><i class="fa-solid fa-drum"></i><span>Drum Lessons</span></a>
-<div class="menu-item"><i class="fa-solid fa-guitar"></i><span>Guitar Lessons</span></div>
-<div class="menu-item"><i class="fa-solid fa-microphone"></i><span>Vocal Training</span></div>
-<div class="menu-item"><i class="fa-solid fa-headphones"></i><span>Studio Sessions</span></div>
-<div class="menu-item"><i class="fa-solid fa-sliders"></i><span>Beat Production</span></div>
-<div class="menu-item"><i class="fa-solid fa-video"></i><span>Live Concerts</span></div>
-<div class="menu-item"><i class="fa-solid fa-users"></i><span>Music Community</span></div>
+<a href="lessons.html" class="menu-item"><i class="fa-solid fa-drum"></i><span>Lessons</span></a>
 </div>
 </div>
 
@@ -147,10 +141,7 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 </div>
 </div>
 
-<div class="right-sidebar">
-<div class="widget"><h3>Your Progress</h3><div id="progressWidget"><div class="progress-box"><p>Loading...</p></div></div></div>
 
-</div>
 </div>
 
 <div class="music-bar">
@@ -206,8 +197,8 @@ const done=progData.progress.filter(p=>p.quiz_passed).length;
 const total=4;
 const pct=Math.round((done/total)*100);
 document.getElementById('progressWidget').innerHTML=`
-<div class="progress-box"><p>Drum Lessons - ${pct}%</p><div class="progress"><div class="fill" style="width:${pct}%"></div></div></div>
-<div class="progress-box"><p>Lessons Completed: ${done}/${total}</p></div>
+<div class="progress-box"><p>Lessons - ${pct}%</p><div class="progress"><div class="fill" style="width:${pct}%"></div></div></div>
+<div class="progress-box"><p>Completed: ${done}/${total}</p></div>
 <div class="progress-box"><p>Achievements: ${progData.achievements.length}</p></div>`;
 
 // Load notifications
