@@ -19,20 +19,38 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .nav-icons{display:flex;align-items:center;gap:10px}
 .icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
 .icon-box:hover{background:var(--primary);color:#fff}
-.container{display:flex;gap:20px;padding:95px 20px 90px;max-width:1300px;margin:0 auto}
-.sidebar{width:22%;position:sticky;top:95px;height:fit-content}
-.menu{background:var(--card);border-radius:20px;padding:15px;box-shadow:0 5px 20px rgba(0,0,0,0.06)}
-.menu-item{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;cursor:pointer;transition:0.3s;color:var(--text);text-decoration:none}
-.menu-item:hover,.menu-item.active{background:var(--bg)}
-.menu-item i{color:var(--primary);width:20px}
-.menu-item .check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin-left:auto;font-size:10px;flex-shrink:0}
-.menu-item .check.done{border-color:#42b72a;background:#42b72a;color:#fff}
-.content{width:78%}
-.video-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:24px;overflow:hidden;background:#000;margin-bottom:20px}
-.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
-.lesson-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px}
-.lesson-header h2{font-size:28px}
-.complete-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;background:rgba(66,183,42,0.15);color:#42b72a;font-weight:600;font-size:14px}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:1200px;margin:0 auto;padding:100px 20px 30px}
+.page-header{margin-bottom:20px}
+.page-header h2{font-size:28px}
+.page-header h2 i{color:var(--primary);margin-right:10px}
+.browse-bar{display:flex;gap:12px;overflow-x:auto;padding:10px 0 20px;flex-wrap:wrap}
+.cat-pill{display:flex;align-items:center;gap:8px;padding:10px 22px;border-radius:30px;border:2px solid var(--border);background:var(--card);cursor:pointer;transition:0.3s;font-size:15px;font-weight:600;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.cat-pill:hover,.cat-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.cat-pill i{font-size:16px}
+.cat-pill .count{background:rgba(0,0,0,0.1);padding:2px 10px;border-radius:12px;font-size:12px;margin-left:4px}
+.cat-pill.active .count{background:rgba(255,255,255,0.2);color:#fff}
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:25px}
+.lesson-card{background:var(--card);border-radius:20px;overflow:hidden;cursor:pointer;transition:0.3s;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
+.lesson-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1)}
+.lesson-card .thumb{position:relative;width:100%;padding-top:56%;background:#000}
+.lesson-card .thumb iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;pointer-events:none}
+.lesson-card .thumb .play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)}
+.lesson-card .thumb .play-overlay i{font-size:48px;color:#fff;text-shadow:0 4px 15px rgba(0,0,0,0.5)}
+.lesson-card .info{padding:16px}
+.lesson-card .info .cat-tag{display:inline-block;padding:4px 12px;border-radius:10px;background:rgba(24,119,242,0.1);color:var(--primary);font-size:12px;font-weight:600;margin-bottom:8px}
+.lesson-card .info h3{font-size:16px;margin-bottom:6px}
+.lesson-card .info p{font-size:13px;color:var(--text2);line-height:1.4}
+.lesson-card .info .done-badge{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:4px 12px;border-radius:10px;background:rgba(66,183,42,0.15);color:#42b72a;font-size:12px;font-weight:600}
+.player-section{display:none;margin-bottom:25px}
+.player-section.show{display:block}
+.player-wrap{position:relative;width:100%;padding-top:56.25%;border-radius:24px;overflow:hidden;background:#000;margin-bottom:15px}
+.player-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.lesson-detail-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:15px;flex-wrap:wrap;gap:10px}
+.lesson-detail-header h2{font-size:26px}
+.back-btn{padding:10px 20px;border-radius:12px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-weight:600;transition:0.3s;color:var(--text)}
+.back-btn:hover{background:var(--bg)}
 .progress-card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
 .progress-card h3{margin-bottom:12px;font-size:18px}
 .progress-card h3 i{color:var(--primary);margin-right:8px}
@@ -55,12 +73,14 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .quiz-result.fail{display:block;background:rgba(231,76,60,0.12);color:#e74c3c}
 .submit-quiz{padding:12px 30px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;transition:0.3s}
 .submit-quiz:hover{opacity:0.9}
-.lesson-nav{display:flex;justify-content:space-between;gap:15px;margin-top:25px}
+.lesson-nav{display:flex;justify-content:space-between;gap:15px;margin-top:20px}
 .lesson-nav button{padding:14px 30px;border-radius:14px;font-weight:600;cursor:pointer;transition:0.3s;border:none;flex:1}
 .lesson-nav .prev-btn{background:var(--bg);color:var(--text)}
 .lesson-nav .next-btn{background:var(--primary);color:#fff}
 .lesson-nav button:hover{opacity:0.85}
-@media(max-width:900px){.sidebar{display:none}.content{width:100%}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state i{font-size:64px;margin-bottom:16px;opacity:0.3}
+@media(max-width:768px){.lesson-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -72,17 +92,26 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 <a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
 <a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
 <a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
 </div>
 </nav>
 
 <div class="container">
-<div class="sidebar"><div class="menu" id="lessonMenu"><p style="padding:10px;color:var(--text2)">Loading...</p></div></div>
-<div class="content">
-<div class="video-wrap"><iframe id="videoFrame" src="" allowfullscreen></iframe></div>
-<div class="lesson-header">
-<div><h2 id="lessonTitle">Loading...</h2><p style="color:var(--text2);margin-top:5px" id="lessonDesc"></p></div>
+<div class="page-header">
+<h2><i class="fa-solid fa-graduation-cap"></i> Lessons</h2>
+<p style="color:var(--text2);margin-top:4px" id="progressText">Pick a category to start learning</p>
+</div>
+
+<div class="browse-bar" id="categoryBar"></div>
+<div class="lesson-grid" id="lessonGrid"></div>
+
+<div class="player-section" id="playerSection">
+<div class="player-wrap"><iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div class="lesson-detail-header">
+<div><h2 id="lessonTitle">Lesson</h2><p style="color:var(--text2);margin-top:5px" id="lessonDesc"></p></div>
 <div id="completionBadge"></div>
 </div>
+<button class="back-btn" onclick="closePlayer()"><i class="fa-solid fa-arrow-left"></i> Back to Lessons</button>
 <div class="progress-card"><h3><i class="fa-solid fa-chart-simple"></i> Course Progress</h3>
 <div class="progress-row"><span style="font-weight:600">Overall</span><div class="pbar"><div class="fill" id="overallProgress" style="width:0%"></div></div><span class="pct" id="progressPct">0%</span></div></div>
 <div id="quizArea"></div>
@@ -90,9 +119,18 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 <button class="prev-btn" onclick="changeLesson(-1)"><i class="fa-solid fa-arrow-left"></i> Previous</button>
 <button class="next-btn" onclick="changeLesson(1)">Next <i class="fa-solid fa-arrow-right"></i></button>
 </div>
-</div></div>
+</div>
+</div>
 
 <script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+
 const quizData={
 'Drum':[
 {q:'What is the most important skill for beginners?',options:['Speed','Stick control','Volume','Drum solos'],answer:1},
@@ -101,11 +139,11 @@ const quizData={
 {q:'Which genre heavily uses syncopated grooves?',options:['Classical','Jazz','Country','Opera'],answer:1},
 {q:'What does a drummer use to keep time?',options:['Guitar pick','Metronome','Amplifier','Capo'],answer:1},
 {q:'What is a rudiment in drumming?',options:['A basic pattern','A guitar chord','A vocal warm-up','A dance move'],answer:0},
-{q:'What does "ghost note" mean?',options:['A loud hit','A soft grace note','A missed beat','A cymbal crash'],answer:1}
+{q:'What does ghost note mean?',options:['A loud hit','A soft grace note','A missed beat','A cymbal crash'],answer:1}
 ],
 'Piano':[
 {q:'How many keys does a standard piano have?',options:['61','76','88','108'],answer:2},
-{q:'What does "C Major" scale start on?',options:['C','D','E','G'],answer:0}
+{q:'What does C Major scale start on?',options:['C','D','E','G'],answer:0}
 ],
 'Guitar':[
 {q:'How many strings does a standard guitar have?',options:['4','5','6','7'],answer:2},
@@ -127,38 +165,83 @@ const quizData={
 ]
 };
 
+const icons={'Drum':'fa-drum','Piano':'fa-keyboard','Guitar':'fa-guitar','Bass':'fa-guitar','Vocals':'fa-microphone','Saxophone':'fa-saxophone','Theory':'fa-book-open'};
+
 let lessons=[];
-let currentLesson=0;
+let currentCategory=null;
+let currentLessonIdx=0;
+let categoryLessons=[];
 
 async function loadLessons(){
 try {
 const data=await API.get('/api/lessons');
 lessons=data.lessons;
-if(lessons.length>0){renderMenu();loadLesson(currentLesson);}
-} catch(e){
-document.getElementById('lessonTitle').textContent='Please log in to access lessons';
-}
+renderCategories();
+if(currentCategory)showCategory(currentCategory);
+updateProgress();
+} catch(e){document.querySelector('.page-header p').textContent='Please log in to access lessons'}
 }
 
-function loadLesson(idx){
-if(!lessons.length)return;
+function renderCategories(){
+const cats=[...new Set(lessons.map(l=>l.category))];
+const bar=document.getElementById('categoryBar');
+bar.innerHTML=cats.map(c=>{
+const count=lessons.filter(l=>l.category===c).length;
+return `<div class="cat-pill ${c===currentCategory?'active':''}" onclick="showCategory('${c}')"><i class="fa-solid ${icons[c]||'fa-music'}"></i>${c}<span class="count">${count}</span></div>`;
+}).join('');
+}
+
+function showCategory(cat){
+currentCategory=cat;
+document.getElementById('playerSection').classList.remove('show');
+document.getElementById('lessonGrid').style.display='grid';
+document.getElementById('progressText').textContent=cat+' lessons';
+renderCategories();
+categoryLessons=lessons.filter(l=>l.category===cat);
+const grid=document.getElementById('lessonGrid');
+grid.innerHTML=categoryLessons.map((l,i)=>{
+const globalIdx=lessons.indexOf(l);
+return `<div class="lesson-card" onclick="openLesson(${globalIdx})">
+<div class="thumb"><div class="play-overlay"><i class="fa-solid fa-play-circle"></i></div></div>
+<div class="info">
+<span class="cat-tag">${l.category}</span>
+<h3>${l.title}</h3>
+<p>${l.description}</p>
+${l.completed?'<span class="done-badge"><i class="fa-solid fa-check-circle"></i> Completed</span>':''}
+</div>
+</div>`;
+}).join('');
+}
+
+function openLesson(idx){
+currentLessonIdx=idx;
 const l=lessons[idx];
-document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+l.video_url;
+document.getElementById('lessonGrid').style.display='none';
+document.getElementById('playerSection').classList.add('show');
+document.getElementById('progressText').textContent='Now Playing: '+l.category;
+document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+l.video_url+'?autoplay=1&rel=0';
 document.getElementById('lessonTitle').textContent=l.title;
 document.getElementById('lessonDesc').textContent=l.description;
 renderQuiz(idx);
-renderMenu();
-renderProgress();
+updateProgress();
 const badge=document.getElementById('completionBadge');
-badge.innerHTML=l.completed?'<span class="complete-badge"><i class="fa-solid fa-check-circle"></i> Completed</span>':'';
+badge.innerHTML=l.completed?'<span class="complete-badge" style="display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;background:rgba(66,183,42,0.15);color:#42b72a;font-weight:600;font-size:14px"><i class="fa-solid fa-check-circle"></i> Completed</span>':'';
+}
+
+function closePlayer(){
+document.getElementById('playerSection').classList.remove('show');
+document.getElementById('lessonGrid').style.display='grid';
+document.getElementById('progressText').textContent=currentCategory+' lessons';
+document.getElementById('videoFrame').src='';
 }
 
 function renderQuiz(idx){
 const l=lessons[idx];
 const catQuiz=quizData[l.category]||[];
-const q=catQuiz[idx>=catQuiz.length?catQuiz.length-1:idx];
-if(!q){document.getElementById('quizArea').innerHTML='';return}
 if(!catQuiz.length){document.getElementById('quizArea').innerHTML='';return}
+const qIdx=categoryLessons.indexOf(l);
+const q=catQuiz[qIdx>=catQuiz.length?catQuiz.length-1:qIdx];
+if(!q){document.getElementById('quizArea').innerHTML='';return}
 const area=document.getElementById('quizArea');
 area.innerHTML=`
 <div class="quiz-card">
@@ -169,7 +252,7 @@ ${q.options.map((o,i)=>`
 <label class="quiz-opt"><input type="radio" name="q" value="${i}" ${l.completed?'disabled':''}><span>${o}</span></label>
 `).join('')}
 </div>
-${l.completed?'<div class="quiz-result pass" style="display:block"> Correct! You passed this quiz.</div>':''}
+${l.completed?'<div class="quiz-result pass" style="display:block">Correct! You passed this quiz.</div>':''}
 <button class="submit-quiz" onclick="checkQuiz(${idx})" ${l.completed?'style="display:none"':''}>Submit Answer</button>
 </div>`;
 }
@@ -180,7 +263,8 @@ if(!sel)return alert('Please select an answer');
 const ans=parseInt(sel.value);
 const l=lessons[idx];
 const catQuiz=quizData[l.category]||[];
-const q=catQuiz[idx>=catQuiz.length?catQuiz.length-1:idx];
+const qIdx=categoryLessons.indexOf(l);
+const q=catQuiz[qIdx>=catQuiz.length?catQuiz.length-1:qIdx];
 if(!q)return;
 const correct=ans===q.answer;
 try {
@@ -190,23 +274,12 @@ loadLessons();
 }
 
 function changeLesson(dir){
-const next=currentLesson+dir;
+const next=currentLessonIdx+dir;
 if(next<0||next>=lessons.length)return;
-currentLesson=next;
-loadLesson(currentLesson);
+openLesson(next);
 }
 
-function renderMenu(){
-const menu=document.getElementById('lessonMenu');
-menu.innerHTML='<div style="font-weight:700;padding:10px;margin-bottom:10px;color:var(--primary)">All Lessons</div>'+
-lessons.map((l,i)=>`
-<div class="menu-item ${i===currentLesson?'active':''}" onclick="currentLesson=${i};loadLesson(${i})">
-<i class="fa-solid fa-music"></i><span>${l.title}</span>
-<div class="check ${l.completed?'done':''}">${l.completed?'✓':''}</div>
-</div>`).join('');
-}
-
-function renderProgress(){
+function updateProgress(){
 const done=lessons.filter(l=>l.completed).length;
 const pct=lessons.length?Math.round((done/lessons.length)*100):0;
 document.getElementById('overallProgress').style.width=pct+'%';

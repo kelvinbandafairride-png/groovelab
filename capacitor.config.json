@@ -5,7 +5,7 @@
   "server": {
     "url": "https://groovelab.onrender.com",
     "cleartext": true,
-    "allowNavigation": ["groovelab.onrender.com"]
+    "allowNavigation": ["groovelab.onrender.com", "youtube.com", "www.youtube.com"]
   },
   "android": {
     "allowCleartext": true
