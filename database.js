@@ -101,7 +101,23 @@ async function seedLessons() {
       { title: 'Drum Basics', desc: 'Learn stick control, posture, and basic rhythm patterns.', cat: 'Drum', video: '2SUwOgmvzK4', order: 0 },
       { title: 'Beat Timing', desc: 'Improve your timing and learn to stay on beat perfectly.', cat: 'Drum', video: 'P4CsG0VCHlI', order: 1 },
       { title: 'Live Drum Practice', desc: 'Play along with real music and build performance skills.', cat: 'Drum', video: 'kQjMvrIJHH8', order: 2 },
-      { title: 'Advanced Grooves', desc: 'Learn professional drum patterns used in modern music.', cat: 'Drum', video: '2cFumWbg3uo', order: 3 }
+      { title: 'Advanced Grooves', desc: 'Learn professional drum patterns used in modern music.', cat: 'Drum', video: '2cFumWbg3uo', order: 3 },
+      { title: 'Drum Warm-Ups', desc: 'Essential warm-up exercises to build speed and control.', cat: 'Drum', video: 'g9_VzNv_lNQ', order: 4 },
+      { title: 'Beginner Drum Beats', desc: 'Master 10 essential beginner drum beats that every drummer needs.', cat: 'Drum', video: '7uUOFVkQObw', order: 5 },
+      { title: 'Drum Fills & Transitions', desc: 'Learn powerful drum fills to transition between sections smoothly.', cat: 'Drum', video: 'yQ1HwVOrHGE', order: 6 },
+      { title: 'Bass Drum Technique', desc: 'Develop strong bass drum foot technique for faster double kicks.', cat: 'Drum', video: 'pG58xTXRHOs', order: 7 },
+      { title: 'Jazz Drumming', desc: 'Explore jazz drumming patterns, brush technique, and swing feel.', cat: 'Drum', video: 'uCOIZjjxFJ8', order: 8 },
+      { title: 'Drum Solo Fundamentals', desc: 'Build confidence to play drum solos with structure and creativity.', cat: 'Drum', video: 'V1rAcd4Lxn4', order: 9 },
+      { title: 'Piano Basics', desc: 'Learn proper hand position, scales, and your first melody.', cat: 'Piano', video: 'UvP1B3J5K4o', order: 0 },
+      { title: 'Piano Chords 101', desc: 'Master major and minor chords, inversions, and progressions.', cat: 'Piano', video: '6Qk1y9q0S6E', order: 1 },
+      { title: 'Guitar Starter', desc: 'Learn basic chords, strumming patterns, and your first song.', cat: 'Guitar', video: 'akvASiymPEs', order: 0 },
+      { title: 'Guitar Fingerpicking', desc: 'Develop fingerpicking technique for folk and acoustic styles.', cat: 'Guitar', video: '4vUOFVj9yG8', order: 1 },
+      { title: 'Bass Guitar Foundations', desc: 'Learn bass lines, root notes, and locking with the drummer.', cat: 'Bass', video: 'pB-7oUJ5XlE', order: 0 },
+      { title: 'Slap Bass Technique', desc: 'Get started with slap bass techniques used in funk and pop.', cat: 'Bass', video: 'bTKLjbDZhzE', order: 1 },
+      { title: 'Vocal Warm-Ups', desc: 'Daily vocal exercises to improve range, tone, and control.', cat: 'Vocals', video: 'oHm4KY5NUmM', order: 0 },
+      { title: 'Singing with Emotion', desc: 'Learn to connect emotionally with your audience through your voice.', cat: 'Vocals', video: 'eNZZQH-KuXA', order: 1 },
+      { title: 'Saxophone Starter', desc: 'Breath control, embouchure, and your first sax notes.', cat: 'Saxophone', video: '6B4kzMXF5xs', order: 0 },
+      { title: 'Music Theory 101', desc: 'Understand notes, scales, keys, and harmony fundamentals.', cat: 'Theory', video: 'rgaTLrZvvk4', order: 0 }
     ];
     if (usePostgres) {
       for (const l of lessons) {

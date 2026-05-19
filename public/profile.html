@@ -33,6 +33,10 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .profile-info .bio{color:var(--text2);line-height:1.5;margin-bottom:12px}
 .edit-btn{padding:10px 25px;border-radius:25px;border:none;background:var(--primary);color:#fff;font-weight:600;cursor:pointer;transition:0.3s}
 .edit-btn:hover{opacity:0.9}
+.avatar-wrap{position:relative}
+.avatar-upload{position:absolute;bottom:5px;right:5px;width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;border:3px solid var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;font-size:16px}
+.avatar-upload:hover{transform:scale(1.1)}
+.avatar-upload input{display:none}
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin:25px 0}
 .stat-card{background:var(--card);border-radius:20px;padding:20px;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
 .stat-card .num{font-size:28px;font-weight:700;color:var(--primary)}
@@ -73,7 +77,7 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 <div class="container">
 <div class="cover-wrap"><img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1400&auto=format&fit=crop" alt=""></div>
 <div class="profile-header">
-<div class="avatar-wrap"><img src="https://i.pravatar.cc/200?img=32" id="profileAvatar" alt="Avatar"></div>
+<div class="avatar-wrap"><img src="https://i.pravatar.cc/200?img=32" id="profileAvatar" alt="Avatar"><label class="avatar-upload"><i class="fa-solid fa-camera"></i><input type="file" id="avatarInput" accept="image/jpeg,image/png,image/gif,image/webp" onchange="uploadAvatar(this)"></label></div>
 <div class="profile-info">
 <h2 id="displayName">Loading...</h2>
 <p class="username" id="displayEmail">@loading</p>
@@ -127,9 +131,10 @@ document.getElementById('statUploads').textContent=userData.stats.uploads;
 
 const progData=await API.get('/api/lessons/progress');
 const done=progData.progress.filter(p=>p.quiz_passed).length;
+const totalLessons=progData.progress.length||(await API.get('/api/lessons')).lessons.length;
 
 document.getElementById('progressSection').innerHTML=`
-<div class="progress-lesson"><p><span>Lessons Complete</span><span>${done}/4</span></p><div class="progress-bar"><div class="progress-fill" style="width:${(done/4)*100}%"></div></div></div>`;
+<div class="progress-lesson"><p><span>Lessons Complete</span><span>${done}/${totalLessons}</span></p><div class="progress-bar"><div class="progress-fill" style="width:${totalLessons>0?(done/totalLessons)*100:0}%"></div></div></div>`;
 
 const badges=['Drummer','Rising Star','First Upload','5 Day Streak','Pro Producer','Globetrotter'];
 const earned=progData.achievements.map(a=>a.badge_name);
@@ -156,6 +161,23 @@ API.getMe().then(user=>{
 API.put('/api/users/'+user.id,{bio:newBio}).then(()=>{document.getElementById('displayBio').textContent=newBio});
 });
 }
+}
+
+async function uploadAvatar(input){
+const file=input.files[0];
+if(!file)return;
+if(file.size>5*1024*1024){alert('Image too large. Max 5MB.');return}
+const user=await API.getMe();
+const formData=new FormData();
+formData.append('avatar',file);
+try{
+const res=await fetch('/api/users/'+user.id+'/avatar',{method:'POST',body:formData});
+const data=await res.json();
+if(!res.ok)throw new Error(data.error);
+document.getElementById('profileAvatar').src=data.avatar+'?'+Date.now();
+alert('Profile photo updated!');
+}catch(e){alert(e.message)}
+input.value='';
 }
 
 loadProfile();

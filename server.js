@@ -33,6 +33,29 @@ const upload = multer({
   }
 });
 
+// Image upload config (avatars)
+const imgStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, 'public', 'avatars');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, unique + path.extname(file.originalname));
+  }
+});
+const uploadImg = multer({
+  storage: imgStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error('Only images allowed (jpg, png, gif, webp)'));
+  }
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -132,6 +155,14 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
   if (avatar !== undefined) await query('UPDATE users SET avatar = ? WHERE id = ?', [avatar, req.params.id]);
   const user = await get('SELECT id, first_name, surname, email, role, avatar, bio FROM users WHERE id = ?', [req.params.id]);
   res.json({ user });
+});
+
+app.post('/api/users/:id/avatar', requireAuth, uploadImg.single('avatar'), async (req, res) => {
+  if (req.session.userId != req.params.id) return res.status(403).json({ error: 'Unauthorized' });
+  if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
+  const avatarUrl = '/avatars/' + req.file.filename;
+  await query('UPDATE users SET avatar = ? WHERE id = ?', [avatarUrl, req.params.id]);
+  res.json({ avatar: avatarUrl });
 });
 
 // ===================== POSTS ROUTES ===================== //
