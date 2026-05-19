@@ -9,8 +9,10 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
 :root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2;--shadow:rgba(0,0,0,0.08)}
-body{background:var(--bg);color:var(--text);overflow-x:hidden}
+body{background:var(--bg);color:var(--text);overflow-x:hidden;background-image:radial-gradient(circle at 10% 30%,rgba(24,119,242,0.04) 0%,transparent 50%),radial-gradient(circle at 90% 60%,rgba(24,119,242,0.03) 0%,transparent 50%);min-height:100vh}
+body::before{content:'♪ ♫ ♩ ♬';position:fixed;font-size:140px;color:rgba(24,119,242,0.025);top:-30px;right:20px;transform:rotate(30deg);pointer-events:none;z-index:0;letter-spacing:50px}
 body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff;--shadow:rgba(0,0,0,0.3)}
+body.dark::before{color:rgba(88,166,255,0.025)}
 .navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;left:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px var(--shadow)}
 body.dark .navbar{background:rgba(22,27,34,0.92)}
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
@@ -30,54 +32,88 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 .mini-menu h3{color:var(--primary);margin-bottom:15px}
 .mini-item{padding:14px;border-radius:14px;margin-bottom:8px;cursor:pointer;transition:0.3s;font-size:15px}
 .mini-item:hover{background:var(--bg)}
-.container{display:flex;gap:25px;padding:100px 20px 100px}
-.left-sidebar{width:23%;position:sticky;top:95px;height:fit-content}
+.container{display:flex;gap:25px;padding:100px 20px 100px;position:relative;z-index:1}
+
+/* SIDEBAR */
+.left-sidebar{width:260px;flex-shrink:0;position:sticky;top:95px;height:fit-content;max-height:calc(100vh - 180px);overflow-y:auto}
 .side-menu{background:var(--card);border-radius:28px;padding:15px;box-shadow:0 5px 20px var(--shadow)}
-.menu-item{display:flex;align-items:center;gap:15px;padding:16px;border-radius:18px;cursor:pointer;transition:0.3s;margin-bottom:8px;text-decoration:none;color:var(--text)}
+.side-menu .title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);padding:12px 16px 8px;opacity:0.6}
+.menu-item{display:flex;align-items:center;gap:15px;padding:14px 16px;border-radius:16px;cursor:pointer;transition:0.3s;margin-bottom:2px;text-decoration:none;color:var(--text);position:relative}
 .menu-item:hover{background:var(--bg);transform:translateX(5px)}
-.menu-item i{color:var(--primary);font-size:22px}
-.menu-item span{font-size:16px;font-weight:600}
-.feed{flex:1}
-.hero{height:280px;border-radius:32px;overflow:hidden;position:relative;margin-bottom:25px;box-shadow:0 10px 30px var(--shadow)}
+.menu-item i{color:var(--primary);font-size:20px;width:22px;text-align:center}
+.menu-item span{font-size:15px;font-weight:600}
+.menu-item .badge{position:absolute;right:14px;background:var(--primary);color:#fff;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.menu-item.disabled{opacity:0.35;cursor:not-allowed;pointer-events:none}
+.menu-item.disabled:hover{transform:none;background:transparent}
+.menu-item.disabled i{color:var(--text2)}
+.separator{height:1px;background:var(--border);margin:10px 16px}
+
+/* FEED */
+.feed{flex:1;min-width:0}
+.hero{height:260px;border-radius:32px;overflow:hidden;position:relative;margin-bottom:25px;box-shadow:0 10px 30px var(--shadow)}
 .hero img{width:100%;height:100%;object-fit:cover}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);display:flex;align-items:flex-end;padding:30px}
-.hero-overlay h2{color:white;font-size:38px;max-width:500px}
-.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
-.lesson-card{background:var(--card);border-radius:28px;overflow:hidden;transition:0.3s;box-shadow:0 5px 20px var(--shadow)}
+.hero-overlay h2{color:white;font-size:36px;max-width:500px}
+.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:25px}
+.lesson-card{background:var(--card);border-radius:24px;overflow:hidden;transition:0.3s;box-shadow:0 5px 20px var(--shadow)}
 .lesson-card:hover{transform:translateY(-5px)}
-.lesson-card img{width:100%;height:180px;object-fit:cover}
-.lesson-content{padding:20px}
-.lesson-content h3{margin-bottom:10px}
-.lesson-content p{color:var(--text2);font-size:14px;line-height:1.5}
-.lesson-btn{width:100%;margin-top:15px;padding:13px;border:none;border-radius:15px;background:var(--primary);color:white;font-weight:bold;cursor:pointer;transition:0.3s;text-decoration:none;display:block;text-align:center}
+.lesson-card img{width:100%;height:160px;object-fit:cover}
+.lesson-content{padding:18px}
+.lesson-content h3{margin-bottom:8px;font-size:17px}
+.lesson-content p{color:var(--text2);font-size:13px;line-height:1.5;margin-bottom:12px}
+.lesson-btn{width:100%;padding:12px;border:none;border-radius:14px;background:var(--primary);color:white;font-weight:700;cursor:pointer;transition:0.3s;text-decoration:none;display:block;text-align:center;font-size:14px}
 .lesson-btn:hover{opacity:0.9}
-.right-sidebar{width:25%;position:sticky;top:95px;height:fit-content}
-.widget{background:var(--card);border-radius:28px;padding:20px;margin-bottom:20px;box-shadow:0 5px 20px var(--shadow)}
-.widget h3{color:var(--primary);margin-bottom:15px}
-.progress-box{margin-bottom:18px}
-.progress-box p{margin-bottom:6px;font-size:14px}
-.progress{width:100%;height:10px;background:var(--bg);border-radius:20px;overflow:hidden}
-.fill{height:100%;background:var(--primary)}
-.activity{display:flex;align-items:center;gap:12px;margin-bottom:15px}
-.activity img{width:50px;height:50px;border-radius:50%;object-fit:cover}
-.activity span{font-weight:600}
-.music-bar{position:fixed;bottom:0;left:0;width:100%;height:70px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:999;box-shadow:0 -5px 20px var(--shadow)}
-.music-bar .track-info{display:flex;align-items:center;gap:12px;min-width:200px}
-.music-bar .track-info img{width:45px;height:45px;border-radius:10px;object-fit:cover}
-.music-bar .track-info .ttl{font-size:14px;font-weight:600}
-.music-bar .track-info .art{font-size:12px;color:var(--text2)}
-.music-bar .controls{display:flex;align-items:center;gap:18px}
-.music-bar .controls button{width:40px;height:40px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:16px;color:var(--text);transition:0.3s;display:flex;align-items:center;justify-content:center}
+
+/* UPLOADED TRACKS */
+.section-title{font-size:20px;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+.section-title i{color:var(--primary)}
+.track-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:25px}
+.track-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border-radius:16px;cursor:pointer;transition:0.3s;box-shadow:0 3px 10px var(--shadow)}
+.track-row:hover{transform:translateX(4px)}
+.track-row.playing{background:rgba(24,119,242,0.08);border-left:3px solid var(--primary)}
+.track-row .play-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:14px;transition:0.2s}
+.track-row .play-btn:hover{transform:scale(1.1)}
+.track-row .track-info{flex:1;min-width:0}
+.track-row .track-info .tt{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-row .track-info .ta{font-size:12px;color:var(--text2)}
+.track-row .track-dur{font-size:12px;color:var(--text2)}
+.device-btn{display:flex;align-items:center;gap:10px;padding:14px 22px;border:2px dashed var(--border);border-radius:16px;cursor:pointer;transition:0.3s;background:var(--card);color:var(--text2);justify-content:center;font-weight:600;font-size:14px;margin-bottom:20px}
+.device-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(24,119,242,0.04)}
+.device-btn i{font-size:20px}
+
+/* MUSIC BAR */
+.music-bar{position:fixed;bottom:0;left:0;width:100%;height:75px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:999;box-shadow:0 -5px 20px var(--shadow)}
+.music-bar .track-info{display:flex;align-items:center;gap:12px;min-width:180px;max-width:220px}
+.music-bar .track-info img{width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--bg)}
+.music-bar .track-info .ttl{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-bar .track-info .art{font-size:11px;color:var(--text2)}
+.music-bar .center-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:500px;margin:0 15px}
+.music-bar .controls{display:flex;align-items:center;gap:14px}
+.music-bar .controls button{width:36px;height:36px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:14px;color:var(--text);transition:0.3s;display:flex;align-items:center;justify-content:center}
 .music-bar .controls button:hover{background:var(--primary);color:#fff}
-.music-bar .controls .play-btn{width:50px;height:50px;background:var(--primary);color:#fff}
-.music-bar .progress-wrap{flex:1;max-width:400px;margin:0 20px}
-.music-bar .progress-wrap input{width:100%;accent-color:var(--primary);cursor:pointer}
+.music-bar .controls .play-btn{width:44px;height:44px;background:var(--primary);color:#fff;font-size:18px}
+.music-bar .seek-row{width:100%;display:flex;align-items:center;gap:8px}
+.music-bar .seek-row .time{font-size:11px;color:var(--text2);min-width:35px;font-variant-numeric:tabular-nums}
+.music-bar .seek-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg);border-radius:4px;outline:none;cursor:pointer}
+.music-bar .seek-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer}
+.music-bar .right-group{display:flex;align-items:center;gap:12px;min-width:140px;justify-content:flex-end}
+.music-bar .right-group .vol-wrap{display:flex;align-items:center;gap:6px}
+.music-bar .right-group .vol-wrap input[type=range]{width:80px;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg);border-radius:4px;outline:none;cursor:pointer}
+.music-bar .right-group .vol-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--primary);cursor:pointer}
+.music-bar .load-local{width:36px;height:36px;border-radius:50%;border:2px dashed var(--border);background:transparent;cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:0.3s;flex-shrink:0}
+.music-bar .load-local:hover{border-color:var(--primary);color:var(--primary)}
+
 @media(max-width:1100px){
-.left-sidebar,.right-sidebar{display:none}
-.feed{width:100%}
+.left-sidebar{display:none}
 .search-box{display:none}
 .container{padding:95px 15px 90px}
-.music-bar .track-info{min-width:auto}
+}
+@media(max-width:768px){
+.music-bar .track-info{min-width:auto;max-width:120px}
+.music-bar .right-group{min-width:auto}
+.music-bar .right-group .vol-wrap input{width:50px}
+.hero h2{font-size:24px}
+.lessons{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -101,7 +137,7 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 <h3>Settings</h3>
 <div class="mini-item" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i> Dark Mode</div>
 <div class="mini-item">Privacy</div>
-<div class="mini-item">Saved Lessons</div>
+<div class="mini-item">Downloaded</div>
 <div class="mini-item" onclick="API.logout().then(()=>window.location='login.html')">Logout</div>
 </div>
 </div>
@@ -112,7 +148,18 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 <div class="container">
 <div class="left-sidebar">
 <div class="side-menu">
-<a href="lessons.html" class="menu-item"><i class="fa-solid fa-drum"></i><span>Lessons</span></a>
+<div class="title">Navigate</div>
+<a href="lessons.html" class="menu-item"><i class="fa-solid fa-graduation-cap"></i><span>Lessons</span><span class="badge">New</span></a>
+<a href="covers.html" class="menu-item"><i class="fa-solid fa-drum"></i><span>Drum Covers</span></a>
+<a href="loops.html" class="menu-item"><i class="fa-solid fa-waveform"></i><span>Loop Studio</span></a>
+<a href="bpm.html" class="menu-item"><i class="fa-solid fa-gauge-high"></i><span>BPM Tap</span></a>
+<div class="separator"></div>
+<div class="title">Coming Soon</div>
+<div class="menu-item disabled"><i class="fa-solid fa-microchip"></i><span>AI Studio</span></div>
+<div class="menu-item disabled"><i class="fa-solid fa-sliders"></i><span>Mixing Desk</span></div>
+<div class="menu-item disabled"><i class="fa-solid fa-music"></i><span>Mastering</span></div>
+<div class="menu-item disabled"><i class="fa-solid fa-users"></i><span>Collab Room</span></div>
+<div class="menu-item disabled"><i class="fa-solid fa-calendar"></i><span>Events</span></div>
 </div>
 </div>
 
@@ -121,6 +168,8 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1400&auto=format&fit=crop">
 <div class="hero-overlay"><h2 id="greeting">Welcome to Groove Lab</h2></div>
 </div>
+
+<h3 class="section-title"><i class="fa-solid fa-fire"></i> Featured Lessons</h3>
 <div class="lessons">
 <div class="lesson-card">
 <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop">
@@ -128,36 +177,61 @@ body.dark .mini-menu{background:rgba(22,27,34,0.96)}
 </div>
 <div class="lesson-card">
 <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=1200&auto=format&fit=crop">
-<div class="lesson-content"><h3>Acoustic Guitar</h3><p>Practice smooth chord transitions and acoustic techniques.</p><button class="lesson-btn">Start Lesson</button></div>
+<div class="lesson-content"><h3>Acoustic Guitar</h3><p>Practice smooth chord transitions and acoustic techniques.</p><button class="lesson-btn" onclick="window.location='lessons.html'">Start Lesson</button></div>
 </div>
 <div class="lesson-card">
 <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1200&auto=format&fit=crop">
-<div class="lesson-content"><h3>Live Performance Skills</h3><p>Build confidence and improve your stage performance skills.</p><button class="lesson-btn">Start Lesson</button></div>
+<div class="lesson-content"><h3>Live Performance Skills</h3><p>Build confidence and improve your stage performance skills.</p><button class="lesson-btn" onclick="window.location='lessons.html'">Start Lesson</button></div>
 </div>
 <div class="lesson-card">
 <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1200&auto=format&fit=crop">
-<div class="lesson-content"><h3>Studio Mixing</h3><p>Learn professional mixing and mastering for modern beats.</p><button class="lesson-btn">Start Lesson</button></div>
-</div>
+<div class="lesson-content"><h3>Studio Mixing</h3><p>Learn professional mixing and mastering for modern beats.</p><button class="lesson-btn" onclick="window.location='lessons.html'">Start Lesson</button></div>
 </div>
 </div>
 
-
+<h3 class="section-title"><i class="fa-solid fa-music"></i> My Music</h3>
+<div class="device-btn" onclick="document.getElementById('localFileInput').click()"><i class="fa-solid fa-folder-open"></i> Load Music from Device</div>
+<input type="file" id="localFileInput" accept=".mp3,.wav,.flac,.aac,.ogg,.m4a,.wma" multiple style="display:none" onchange="loadLocalFiles(this)">
+<div class="track-grid" id="trackGrid"><div style="text-align:center;padding:30px;color:var(--text2)"><i class="fa-solid fa-headphones" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px"></i>Load music from your device or upload to see your tracks here</div></div>
+</div>
 </div>
 
 <div class="music-bar">
 <div class="track-info">
-<img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop" id="trackArt">
-<div><div class="ttl" id="trackTitle">Midnight Groove</div><div class="art" id="trackArtist">Nova Beats</div></div>
+<img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop" id="playerArt">
+<div><div class="ttl" id="playerTitle">No Track</div><div class="art" id="playerArtist">Load a file to play</div></div>
 </div>
-<div class="progress-wrap"><input type="range" min="0" max="100" value="35"></div>
+<div class="center-group">
 <div class="controls">
-<button onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button>
-<button class="play-btn" onclick="togglePlay()"><i class="fa-solid fa-play" id="playIcon"></i></button>
-<button onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button>
+<button onclick="playPrev()"><i class="fa-solid fa-backward-step"></i></button>
+<button class="play-btn" onclick="playPause()"><i class="fa-solid fa-play" id="pc"></i></button>
+<button onclick="playNext()"><i class="fa-solid fa-forward-step"></i></button>
+</div>
+<div class="seek-row">
+<span class="time" id="currentTime">0:00</span>
+<input type="range" id="seekBar" min="0" max="100" value="0" oninput="seekTo(this.value)">
+<span class="time" id="totalTime">0:00</span>
+</div>
+</div>
+<div class="right-group">
+<button class="load-local" onclick="document.getElementById('localFileInput').click()" title="Load from device"><i class="fa-solid fa-folder-plus"></i></button>
+<div class="vol-wrap">
+<i class="fa-solid fa-volume-high" style="font-size:14px;color:var(--text2)"></i>
+<input type="range" id="volSlider" min="0" max="1" step="0.05" value="0.8" oninput="setPlayerVolume(this.value)">
+</div>
 </div>
 </div>
 
+<audio id="audioPlayer" style="display:none" ontimeupdate="updateSeek()" onloadedmetadata="updateMeta()" onended="playNext()"></audio>
+
 <script>
+let audioPlayer = document.getElementById('audioPlayer');
+let isPlaying = false;
+let playlist = [];
+let currentTrackIdx = -1;
+let localFiles = [];
+
+// SIDEBAR TOGGLES
 function toggleMenu(menuId){
 document.querySelectorAll('.mini-menu').forEach(m=>{if(m.id!==menuId)m.classList.remove('show')});
 document.getElementById(menuId).classList.toggle('show');
@@ -167,62 +241,174 @@ if(!e.target.closest('.icon-box'))document.querySelectorAll('.mini-menu').forEac
 }
 function toggleTheme(){
 document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
 localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
 }
 if(localStorage.getItem('grooveTheme')==='dark')document.body.classList.add('dark');
 
-const playlist=[
-{title:'Midnight Groove',artist:'Nova Beats',art:'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop'},
-{title:'Summer Vibes',artist:'DJ Marcus',art:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=100&auto=format&fit=crop'},
-{title:'Beat Lab Vol 1',artist:'Sarah Melody',art:'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=100&auto=format&fit=crop'}
-];
-let currentTrack=0,isPlaying=false;
-function updateTrack(){const t=playlist[currentTrack];document.getElementById('trackTitle').textContent=t.title;document.getElementById('trackArtist').textContent=t.artist;document.getElementById('trackArt').src=t.art}
-function togglePlay(){isPlaying=!isPlaying;document.getElementById('playIcon').className=isPlaying?'fa-solid fa-pause':'fa-solid fa-play'}
-function nextTrack(){currentTrack=(currentTrack+1)%playlist.length;updateTrack()}
-function prevTrack(){currentTrack=(currentTrack-1+playlist.length)%playlist.length;updateTrack()}
-updateTrack();
+// AUDIO PLAYER
+function loadLocalFiles(input){
+const files = input.files;
+if(!files.length) return;
+for(let f of files){
+localFiles.push(f);
+playlist.push({title: f.name.replace(/\.[^.]+$/,''), artist: 'Local File', src: URL.createObjectURL(f), type: 'local'});
+}
+renderTracks();
+if(!isPlaying && playlist.length){
+playTrack(playlist.length - files.length);
+}
+input.value = '';
+}
 
-// AUTH + DATA
+function playTrack(idx){
+if(idx < 0 || idx >= playlist.length) return;
+currentTrackIdx = idx;
+const t = playlist[idx];
+audioPlayer.src = t.src;
+audioPlayer.play().then(() => {
+isPlaying = true;
+document.getElementById('pc').className = 'fa-solid fa-pause';
+document.getElementById('playerTitle').textContent = t.title;
+document.getElementById('playerArtist').textContent = t.artist;
+document.getElementById('playerArt').src = t.art || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop';
+renderTracks();
+}).catch(e => {
+if(e.name === 'NotAllowedError'){
+alert('Click Play to start playback');
+}
+});
+}
+
+function playPause(){
+if(!playlist.length) {
+document.getElementById('localFileInput').click();
+return;
+}
+if(currentTrackIdx < 0) { playTrack(0); return; }
+if(isPlaying){
+audioPlayer.pause();
+isPlaying = false;
+document.getElementById('pc').className = 'fa-solid fa-play';
+} else {
+audioPlayer.play();
+isPlaying = true;
+document.getElementById('pc').className = 'fa-solid fa-pause';
+}
+}
+
+function playNext(){
+if(!playlist.length) return;
+const next = (currentTrackIdx + 1) % playlist.length;
+playTrack(next);
+}
+
+function playPrev(){
+if(!playlist.length) return;
+const prev = (currentTrackIdx - 1 + playlist.length) % playlist.length;
+playTrack(prev);
+}
+
+function updateSeek(){
+const ap = audioPlayer;
+if(!ap.duration) return;
+document.getElementById('seekBar').value = (ap.currentTime / ap.duration) * 100;
+document.getElementById('currentTime').textContent = formatTime(ap.currentTime);
+}
+
+function updateMeta(){
+const ap = audioPlayer;
+document.getElementById('totalTime').textContent = formatTime(ap.duration);
+document.getElementById('seekBar').max = 100;
+}
+
+function seekTo(val){
+const ap = audioPlayer;
+if(!ap.duration) return;
+ap.currentTime = (val / 100) * ap.duration;
+}
+
+function setPlayerVolume(val){
+audioPlayer.volume = parseFloat(val);
+}
+
+function formatTime(s){
+if(!s || isNaN(s)) return '0:00';
+const m = Math.floor(s / 60);
+const sec = Math.floor(s % 60);
+return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+function renderTracks(){
+const grid = document.getElementById('trackGrid');
+if(!playlist.length){
+grid.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2)"><i class="fa-solid fa-headphones" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px"></i>Load music from your device or upload to see your tracks here</div>';
+return;
+}
+grid.innerHTML = playlist.map((t,i) => `
+<div class="track-row ${i===currentTrackIdx?'playing':''}" onclick="playTrack(${i})">
+<button class="play-btn">${i===currentTrackIdx && isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>'}</button>
+<div class="track-info"><div class="tt">${t.title}</div><div class="ta">${t.artist}</div></div>
+<div class="track-dur">${t.dur || ''}</div>
+</div>
+`).join('');
+
+// Scroll to active track
+const active = grid.querySelector('.track-row.playing');
+if(active) active.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// Load uploaded tracks from server
+async function loadUploadedTracks(){
+try {
+const data = await API.get('/api/uploads');
+if(data.uploads && data.uploads.length){
+data.uploads.forEach(u => {
+if(u.filename){
+playlist.push({
+title: u.title,
+artist: u.author || 'Unknown',
+src: '/uploads/' + u.filename,
+art: u.author_avatar ? null : null,
+dur: '',
+type: 'upload'
+});
+}
+});
+renderTracks();
+}
+} catch(e){}
+}
+
+// AUTH INIT
 (async function(){
 try {
-const user=await API.getMe();
+const user = await API.getMe();
 if(!user){window.location='login.html';return;}
 document.getElementById('greeting').textContent='Welcome back, '+user.first_name+'!';
 if(user.role==='admin')document.getElementById('adminLink').style.display='flex';
-
-// Load progress
-const progData=await API.get('/api/lessons/progress');
-const done=progData.progress.filter(p=>p.quiz_passed).length;
-const total=4;
-const pct=Math.round((done/total)*100);
-document.getElementById('progressWidget').innerHTML=`
-<div class="progress-box"><p>Lessons - ${pct}%</p><div class="progress"><div class="fill" style="width:${pct}%"></div></div></div>
-<div class="progress-box"><p>Completed: ${done}/${total}</p></div>
-<div class="progress-box"><p>Achievements: ${progData.achievements.length}</p></div>`;
-
-// Load notifications
-const notifData=await API.get('/api/notifications');
-const notifList=document.getElementById('notifList');
-if(notifData.notifications.length===0){
-notifList.innerHTML='<div class="mini-item">No notifications yet</div>';
-}else{
-notifList.innerHTML=notifData.notifications.map(n=>`<div class="mini-item">${n.message}</div>`).join('');
+const notifData = await API.get('/api/notifications');
+const notifList = document.getElementById('notifList');
+if(!notifData.notifications.length){
+notifList.innerHTML = '<div class="mini-item">No notifications yet</div>';
+} else {
+notifList.innerHTML = notifData.notifications.map(n => '<div class="mini-item">'+n.message+'</div>').join('');
 }
+loadUploadedTracks();
 } catch(e){console.error(e)}
 })();
 
 async function doSearch(){
-const q=document.getElementById('searchInput').value.trim();
+const q = document.getElementById('searchInput').value.trim();
 if(!q||q.length<2)return;
-const data=await API.get('/api/search?q='+encodeURIComponent(q));
-if(data.results.length===0){alert('No results found');return}
-const links=data.results.map(r=>{
-if(r.type==='lesson')return `Lessons: ${r.name}`;
-if(r.type==='user')return `User: ${r.name}`;
-return `Upload: ${r.name} by ${r.info}`;
-}).join('\n');
-alert('Search results:\n'+links);
+const data = await API.get('/api/search?q='+encodeURIComponent(q));
+if(!data.results.length){alert('No results found');return}
+alert(data.results.map(r => {
+if(r.type==='lesson') return 'Lessons: '+r.name;
+if(r.type==='user') return 'User: '+r.name;
+return 'Upload: '+r.name+' by '+r.info;
+}).join('\n'));
 }
 </script>
 </body>

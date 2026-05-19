@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPM Tap - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text);background-image:radial-gradient(circle at 50% 20%,rgba(24,119,242,0.05) 0%,transparent 50%);min-height:100vh}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;left:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-icons{display:flex;align-items:center;gap:10px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:700px;margin:0 auto;padding:100px 20px 30px}
+.page-header{margin-bottom:25px}
+.page-header h2{font-size:28px}
+.page-header h2 i{color:var(--primary);margin-right:10px}
+.page-header p{color:var(--text2);margin-top:4px}
+
+.bpm-card{background:var(--card);border-radius:32px;padding:40px;box-shadow:0 10px 30px rgba(0,0,0,0.06);text-align:center}
+.bpm-display{font-size:120px;font-weight:800;color:var(--primary);line-height:1;margin-bottom:10px;transition:0.1s;font-variant-numeric:tabular-nums}
+.bpm-display.tapped{animation:bpmPulse 0.15s ease}
+@keyframes bpmPulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+.bpm-label{font-size:18px;color:var(--text2);margin-bottom:30px;text-transform:uppercase;letter-spacing:3px;font-weight:600}
+.tap-area{width:220px;height:220px;border-radius:50%;border:4px solid var(--primary);margin:0 auto 25px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.1s;background:rgba(24,119,242,0.04);user-select:none}
+.tap-area:active{transform:scale(0.95);background:rgba(24,119,242,0.12)}
+.tap-area i{font-size:60px;color:var(--primary)}
+.tap-hint{font-size:15px;color:var(--text2);margin-bottom:30px}
+.tap-stats{display:flex;justify-content:center;gap:40px;margin-bottom:30px}
+.tap-stat{text-align:center}
+.tap-stat .num{font-size:28px;font-weight:700;color:var(--text)}
+.tap-stat .lbl{font-size:13px;color:var(--text2);margin-top:4px}
+
+.metro-section{margin-top:40px;padding-top:30px;border-top:2px solid var(--border)}
+.metro-section h3{font-size:20px;margin-bottom:20px;color:var(--text)}
+.metro-section h3 i{color:var(--primary);margin-right:8px}
+.metro-controls{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
+.metro-bpm{display:flex;align-items:center;gap:12px}
+.metro-bpm label{font-weight:600;font-size:15px}
+.metro-bpm input[type=range]{width:140px;accent-color:var(--primary);cursor:pointer}
+.metro-bpm .val{font-size:24px;font-weight:700;color:var(--primary);min-width:50px}
+.metro-btn{padding:14px 32px;border-radius:16px;font-weight:700;cursor:pointer;transition:0.3s;border:none;font-size:15px;display:flex;align-items:center;gap:8px}
+.metro-btn.start{background:var(--primary);color:#fff}
+.metro-btn.start:hover{opacity:0.9}
+.metro-btn.start.playing{background:#e74c3c}
+.metro-btn.sub{padding:10px 20px;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;font-weight:600;font-size:13px;transition:0.3s}
+.metro-btn.sub:hover{border-color:var(--primary);color:var(--primary)}
+
+.beat-visualizer{display:flex;justify-content:center;gap:12px;margin:25px 0 15px}
+.beat-dot{width:20px;height:20px;border-radius:50%;background:var(--border);transition:0.08s}
+.beat-dot.active{background:var(--primary);transform:scale(1.3)}
+.beat-dot.active.first{background:#e74c3c;transform:scale(1.3)}
+
+.bpm-presets{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.bpm-presets button{padding:10px 20px;border-radius:14px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:13px;font-weight:600;transition:0.3s;color:var(--text2)}
+.bpm-presets button:hover{border-color:var(--primary);color:var(--primary)}
+
+.converter{margin-top:20px;padding:20px;background:var(--bg);border-radius:20px}
+.converter h4{font-size:15px;margin-bottom:12px;color:var(--text2)}
+.converter-row{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
+.converter-row label{font-size:13px;font-weight:600}
+.converter-row input[type=number]{width:80px;padding:10px;border:2px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-size:16px;font-weight:600;text-align:center;outline:none}
+.converter-row input:focus{border-color:var(--primary)}
+.converter-row span{font-size:14px;color:var(--text2)}
+.converter-row .result{font-size:20px;font-weight:700;color:var(--primary)}
+@media(max-width:600px){
+.bpm-display{font-size:80px}
+.tap-area{width:170px;height:170px}
+.tap-area i{font-size:45px}
+.tap-stats{gap:20px}
+.bpm-card{padding:25px}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="mainmenu.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="lessons.html" class="icon-box"><i class="fa-solid fa-graduation-cap"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<div class="container">
+<div class="page-header">
+<h2><i class="fa-solid fa-gauge-high"></i> BPM Tap & Metronome</h2>
+<p>Tap along to find the tempo, or use the metronome to keep time</p>
+</div>
+
+<div class="bpm-card">
+<div class="bpm-display" id="bpmDisplay">120</div>
+<div class="bpm-label">Beats Per Minute</div>
+
+<div class="tap-area" onclick="tapBpm()" id="tapArea">
+<i class="fa-solid fa-hand-pointer"></i>
+</div>
+<div class="tap-hint" id="tapHint">Tap here to find the BPM</div>
+
+<div class="tap-stats">
+<div class="tap-stat"><div class="num" id="tapCount">0</div><div class="lbl">Taps</div></div>
+<div class="tap-stat"><div class="num" id="tapAvg">0</div><div class="lbl">Avg BPM</div></div>
+<div class="tap-stat"><div class="num" id="tapBest">0</div><div class="lbl">Best Match</div></div>
+</div>
+
+<div class="bpm-presets">
+<button onclick="setBpm(60)">Largo 60</button>
+<button onclick="setBpm(80)">Andante 80</button>
+<button onclick="setBpm(100)">Moderate 100</button>
+<button onclick="setBpm(120)">Allegro 120</button>
+<button onclick="setBpm(140)">Vivace 140</button>
+<button onclick="setBpm(160)">Presto 160</button>
+</div>
+
+<div class="metro-section">
+<h3><i class="fa-solid fa-metronome"></i> Metronome</h3>
+<div class="metro-controls">
+<div class="metro-bpm">
+<label>BPM</label>
+<input type="range" id="metroSlider" min="20" max="240" value="120" oninput="updateMetroBpm(this.value)">
+<span class="val" id="metroBpmVal">120</span>
+</div>
+<button class="metro-btn start" id="metroBtn" onclick="toggleMetro()"><i class="fa-solid fa-play"></i> Start Metronome</button>
+<div>
+<button class="metro-btn sub" onclick="changeMetroBpm(-5)"><i class="fa-solid fa-minus"></i> 5</button>
+<button class="metro-btn sub" onclick="changeMetroBpm(5)"><i class="fa-solid fa-plus"></i> 5</button>
+</div>
+</div>
+
+<div class="beat-visualizer" id="beatVis"></div>
+
+<div class="converter">
+<h4><i class="fa-solid fa-calculator"></i> Note Duration Converter</h4>
+<div class="converter-row">
+<label>BPM:</label>
+<input type="number" id="convBpm" value="120" min="20" max="300" oninput="convertNotes()">
+<span>=</span>
+<span class="result" id="convMs">500</span>
+<span>ms per beat</span>
+<span>|</span>
+<span>Quarter note:</span>
+<span class="result" id="convHz">2.00</span>
+<span>Hz</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+let audioCtx, metroPlaying = false;
+let metroTimer = null;
+let metroBpm = 120;
+let currentBeat = 0;
+
+// TAP
+let taps = [];
+let lastTapTime = 0;
+let tapDisplayBpm = 120;
+
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+
+function tapBpm(){
+const now = Date.now();
+if (lastTapTime && (now - lastTapTime) < 3000) {
+const bpm = Math.round(60000 / (now - lastTapTime));
+taps.push(bpm);
+if (taps.length > 20) taps.shift();
+}
+lastTapTime = now;
+
+const bpmDisp = document.getElementById('bpmDisplay');
+bpmDisp.classList.remove('tapped');
+void bpmDisp.offsetWidth;
+bpmDisp.classList.add('tapped');
+
+document.getElementById('tapHint').textContent = 'Keep tapping...';
+document.getElementById('tapCount').textContent = taps.length;
+
+if (taps.length > 0) {
+const avg = Math.round(taps.reduce((a,b)=>a+b,0) / taps.length);
+document.getElementById('tapAvg').textContent = avg;
+document.getElementById('bpmDisplay').textContent = avg;
+document.getElementById('metroSlider').value = avg;
+document.getElementById('metroBpmVal').textContent = avg;
+metroBpm = avg;
+updateMetroBpm(avg);
+tapDisplayBpm = avg;
+
+// best match: most common bpm rounded to nearest 5
+const freq = {};
+taps.forEach(t => { const r = Math.round(t/5)*5; freq[r] = (freq[r]||0) + 1; });
+let best = tapDisplayBpm, maxCount = 0;
+Object.entries(freq).forEach(([b,c]) => { if(c > maxCount) { maxCount = c; best = parseInt(b); } });
+document.getElementById('tapBest').textContent = best + ' (' + maxCount + 'x)';
+}
+}
+
+function setBpm(b){
+taps = [];
+lastTapTime = 0;
+document.getElementById('bpmDisplay').textContent = b;
+document.getElementById('tapCount').textContent = '0';
+document.getElementById('tapAvg').textContent = '0';
+document.getElementById('tapBest').textContent = '0';
+document.getElementById('tapHint').textContent = 'Tap here to find the BPM';
+document.getElementById('metroSlider').value = b;
+document.getElementById('metroBpmVal').textContent = b;
+metroBpm = b;
+tapDisplayBpm = b;
+convertNotes();
+if(metroPlaying){stopMetro();startMetro();}
+}
+
+function updateMetroBpm(val){
+metroBpm = parseInt(val);
+document.getElementById('metroBpmVal').textContent = metroBpm;
+document.getElementById('bpmDisplay').textContent = metroBpm;
+document.getElementById('convBpm').value = metroBpm;
+convertNotes();
+if(metroPlaying){stopMetro();startMetro();}
+}
+
+function changeMetroBpm(delta){
+const newBpm = Math.min(240, Math.max(20, metroBpm + delta));
+document.getElementById('metroSlider').value = newBpm;
+updateMetroBpm(newBpm);
+}
+
+// METRONOME
+function toggleMetro(){
+if(metroPlaying) stopMetro();
+else startMetro();
+}
+
+function startMetro(){
+if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+if(audioCtx.state === 'suspended') audioCtx.resume();
+metroPlaying = true;
+const btn = document.getElementById('metroBtn');
+btn.innerHTML = '<i class="fa-solid fa-stop"></i> Stop';
+btn.classList.add('playing');
+currentBeat = 0;
+
+// Build visualizer dots
+const vis = document.getElementById('beatVis');
+vis.innerHTML = Array.from({length:4}, (_,i) => `<div class="beat-dot ${i===0?'first':''}" data-beat="${i}"></div>`).join('');
+
+scheduleMetro();
+}
+
+function stopMetro(){
+metroPlaying = false;
+if(metroTimer) { clearTimeout(metroTimer); metroTimer = null; }
+const btn = document.getElementById('metroBtn');
+btn.innerHTML = '<i class="fa-solid fa-play"></i> Start Metronome';
+btn.classList.remove('playing');
+document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('active'));
+}
+
+function scheduleMetro(){
+if(!metroPlaying) return;
+const interval = 60000 / metroBpm;
+// Tick
+playClick(currentBeat === 0);
+document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('active'));
+const dot = document.querySelector(`.beat-dot[data-beat="${currentBeat}"]`);
+if(dot) dot.classList.add('active');
+currentBeat = (currentBeat + 1) % 4;
+metroTimer = setTimeout(scheduleMetro, interval);
+}
+
+function playClick(isDownbeat){
+if(!audioCtx) return;
+if(audioCtx.state === 'suspended') audioCtx.resume();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.frequency.value = isDownbeat ? 1200 : 900;
+osc.type = 'sine';
+gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+osc.start();
+osc.stop(audioCtx.currentTime + 0.08);
+}
+
+function convertNotes(){
+const bpm = parseInt(document.getElementById('convBpm').value) || 120;
+const msPerBeat = Math.round(60000 / bpm);
+const hz = (bpm / 60).toFixed(2);
+document.getElementById('convMs').textContent = msPerBeat;
+document.getElementById('convHz').textContent = hz;
+}
+
+document.getElementById('metroSlider').value = 120;
+convertNotes();
+</script>
+</body>
+</html>
