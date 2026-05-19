@@ -1,0 +1,26 @@
+/* Groove Lab Shared Music Player */
+.music-bar{position:fixed;bottom:0;left:0;width:100%;height:75px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:999;box-shadow:0 -5px 20px var(--shadow)}
+.music-bar .track-info{display:flex;align-items:center;gap:12px;min-width:180px;max-width:220px}
+.music-bar .track-info img{width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--bg);flex-shrink:0}
+.music-bar .track-info .ttl{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-bar .track-info .art{font-size:11px;color:var(--text2)}
+.music-bar .center-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:500px;margin:0 15px}
+.music-bar .controls{display:flex;align-items:center;gap:14px}
+.music-bar .controls button{width:36px;height:36px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:14px;color:var(--text);transition:0.3s;display:flex;align-items:center;justify-content:center}
+.music-bar .controls button:hover{background:var(--primary);color:#fff}
+.music-bar .controls .play-btn{width:44px;height:44px;background:var(--primary);color:#fff;font-size:18px}
+.music-bar .seek-row{width:100%;display:flex;align-items:center;gap:8px}
+.music-bar .seek-row .time{font-size:11px;color:var(--text2);min-width:35px;font-variant-numeric:tabular-nums}
+.music-bar .seek-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg);border-radius:4px;outline:none;cursor:pointer}
+.music-bar .seek-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer}
+.music-bar .right-group{display:flex;align-items:center;gap:12px;min-width:140px;justify-content:flex-end}
+.music-bar .right-group .vol-wrap{display:flex;align-items:center;gap:6px}
+.music-bar .right-group .vol-wrap input[type=range]{width:80px;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg);border-radius:4px;outline:none;cursor:pointer}
+.music-bar .right-group .vol-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--primary);cursor:pointer}
+.music-bar .load-local{width:36px;height:36px;border-radius:50%;border:2px dashed var(--border);background:transparent;cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:0.3s;flex-shrink:0}
+.music-bar .load-local:hover{border-color:var(--primary);color:var(--primary)}
+@media(max-width:768px){
+.music-bar .track-info{min-width:auto;max-width:120px}
+.music-bar .right-group{min-width:auto}
+.music-bar .right-group .vol-wrap input{width:50px}
+}

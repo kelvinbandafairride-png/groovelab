@@ -24,7 +24,7 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .icon-box:hover{background:var(--primary);color:#fff}
 .theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
 .theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
-.container{max-width:1200px;margin:0 auto;padding:100px 20px 30px;position:relative;z-index:1}
+.container{max-width:1200px;margin:0 auto;padding:100px 20px 100px;position:relative;z-index:1}
 .page-header{margin-bottom:20px}
 .page-header h2{font-size:28px}
 .page-header h2 i{color:var(--primary);margin-right:10px}
@@ -55,6 +55,19 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
 .empty-state i{font-size:64px;margin-bottom:16px;opacity:0.3}
 @media(max-width:768px){.cover-grid{grid-template-columns:1fr}}
+.music-bar{position:fixed;bottom:0;left:0;width:100%;height:70px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:999;box-shadow:0 -5px 20px rgba(0,0,0,0.08)}
+body.dark .music-bar{background:var(--card)}
+.music-bar .info{display:flex;align-items:center;gap:12px;min-width:160px}
+.music-bar .info img{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--bg)}
+.music-bar .info .ttl{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-bar .info .art{font-size:11px;color:var(--text2)}
+.music-bar .ctrls{display:flex;align-items:center;gap:14px}
+.music-bar .ctrls button{width:34px;height:34px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:13px;color:var(--text);transition:0.3s;display:flex;align-items:center;justify-content:center}
+.music-bar .ctrls button:hover{background:var(--primary);color:#fff}
+.music-bar .ctrls .pb{width:42px;height:42px;background:var(--primary);color:#fff;font-size:16px}
+.music-bar .extras{display:flex;align-items:center;gap:10px}
+.music-bar .extras .lf{width:34px;height:34px;border-radius:50%;border:2px dashed var(--border);background:transparent;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.music-bar .extras .lf:hover{border-color:var(--primary);color:var(--primary)}
 </style>
 </head>
 <body>
@@ -91,7 +104,33 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 </div>
 </div>
 
+<div class="music-bar">
+<div class="info">
+<img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop" id="mpArt">
+<div><div class="ttl" id="mpTitle">No Track</div><div class="art" id="mpArtist">Tap to load music</div></div>
+</div>
+<div class="ctrls">
+<button onclick="mpPrev()"><i class="fa-solid fa-backward-step"></i></button>
+<button class="pb" onclick="mpPlay()"><i class="fa-solid fa-play" id="mpPc"></i></button>
+<button onclick="mpNext()"><i class="fa-solid fa-forward-step"></i></button>
+</div>
+<div class="extras">
+<button class="lf" onclick="document.getElementById('mpFile').click()" title="Load from device"><i class="fa-solid fa-folder-plus"></i></button>
+</div>
+</div>
+<input type="file" id="mpFile" accept=".mp3,.wav,.flac,.aac,.ogg,.m4a" multiple style="display:none" onchange="mpLoad(this)">
+<audio id="mpAudio" style="display:none" onended="mpNext()"></audio>
+
 <script>
+// Shared music player
+const mpAudio=document.getElementById('mpAudio');
+let mpPlaylist=[],mpIdx=-1,mpPlaying=false;
+function mpLoad(i){for(let f of i.files){mpPlaylist.push({title:f.name.replace(/\.[^.]+$/,''),artist:'Local File',src:URL.createObjectURL(f)})}i.value='';if(!mpPlaying&&mpPlaylist.length)mpPlayTrack(mpPlaylist.length-1)}
+function mpPlayTrack(i){if(i<0||i>=mpPlaylist.length)return;mpIdx=i;const t=mpPlaylist[i];mpAudio.src=t.src;mpAudio.play().then(()=>{mpPlaying=true;document.getElementById('mpPc').className='fa-solid fa-pause';document.getElementById('mpTitle').textContent=t.title;document.getElementById('mpArtist').textContent=t.artist;document.getElementById('mpArt').src=t.art||'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop'}).catch(()=>{})}
+function mpPlay(){if(!mpPlaylist.length){document.getElementById('mpFile').click();return}if(mpIdx<0){mpPlayTrack(0);return}if(mpPlaying){mpAudio.pause();mpPlaying=false;document.getElementById('mpPc').className='fa-solid fa-play'}else{mpAudio.play();mpPlaying=true;document.getElementById('mpPc').className='fa-solid fa-pause'}}
+function mpNext(){if(!mpPlaylist.length)return;mpPlayTrack((mpIdx+1)%mpPlaylist.length)}
+function mpPrev(){if(!mpPlaylist.length)return;mpPlayTrack((mpIdx-1+mpPlaylist.length)%mpPlaylist.length)}
+
 const covers = [
 {title:'7 Rings - Ariana Grande (Drum Cover)',artist:'Drummer Girl',id:'W9V3v9oGKm0'},
 {title:'Blinding Lights - The Weeknd Drum Cover',artist:'CooperDrummer',id:'AnF9dHIknqY'},
