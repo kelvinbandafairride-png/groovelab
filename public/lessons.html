@@ -93,12 +93,39 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 </div></div>
 
 <script>
-const quizData=[
+const quizData={
+'Drum':[
 {q:'What is the most important skill for beginners?',options:['Speed','Stick control','Volume','Drum solos'],answer:1},
 {q:'What tool helps musicians maintain consistent tempo?',options:['Amplifier','Metronome','Equalizer','Reverb'],answer:1},
 {q:'What is a fill in drumming?',options:['A pause','A transition pattern','The main beat','A cymbal crash'],answer:1},
-{q:'Which genre heavily uses syncopated grooves?',options:['Classical','Jazz','Country','Opera'],answer:1}
-];
+{q:'Which genre heavily uses syncopated grooves?',options:['Classical','Jazz','Country','Opera'],answer:1},
+{q:'What does a drummer use to keep time?',options:['Guitar pick','Metronome','Amplifier','Capo'],answer:1},
+{q:'What is a rudiment in drumming?',options:['A basic pattern','A guitar chord','A vocal warm-up','A dance move'],answer:0},
+{q:'What does "ghost note" mean?',options:['A loud hit','A soft grace note','A missed beat','A cymbal crash'],answer:1}
+],
+'Piano':[
+{q:'How many keys does a standard piano have?',options:['61','76','88','108'],answer:2},
+{q:'What does "C Major" scale start on?',options:['C','D','E','G'],answer:0}
+],
+'Guitar':[
+{q:'How many strings does a standard guitar have?',options:['4','5','6','7'],answer:2},
+{q:'What is a capo used for?',options:['Changing pitch','Muting strings','Amplifying','Tuning'],answer:0}
+],
+'Bass':[
+{q:'How many strings on a standard bass?',options:['3','4','5','6'],answer:1},
+{q:'What does a bass player lock with?',options:['Singer','Guitarist','Drummer','Piano'],answer:2}
+],
+'Vocals':[
+{q:'What is the diaphragm used for?',options:['Breath support','Singing higher','Harmony','Rhythm'],answer:0},
+{q:'What is vibrato?',options:['Fast volume change','Pitch oscillation','Breath control','High note'],answer:1}
+],
+'Saxophone':[
+{q:'What is a reed used for?',options:['Producing sound','Cleaning','Tuning','Protection'],answer:0}
+],
+'Theory':[
+{q:'How many notes in a major scale?',options:['5','6','7','8'],answer:2}
+]
+};
 
 let lessons=[];
 let currentLesson=0;
@@ -128,8 +155,10 @@ badge.innerHTML=l.completed?'<span class="complete-badge"><i class="fa-solid fa-
 
 function renderQuiz(idx){
 const l=lessons[idx];
-const q=quizData[idx];
+const catQuiz=quizData[l.category]||[];
+const q=catQuiz[idx>=catQuiz.length?catQuiz.length-1:idx];
 if(!q){document.getElementById('quizArea').innerHTML='';return}
+if(!catQuiz.length){document.getElementById('quizArea').innerHTML='';return}
 const area=document.getElementById('quizArea');
 area.innerHTML=`
 <div class="quiz-card">
@@ -149,7 +178,11 @@ async function checkQuiz(idx){
 const sel=document.querySelector('input[name="q"]:checked');
 if(!sel)return alert('Please select an answer');
 const ans=parseInt(sel.value);
-const correct=ans===quizData[idx].answer;
+const l=lessons[idx];
+const catQuiz=quizData[l.category]||[];
+const q=catQuiz[idx>=catQuiz.length?catQuiz.length-1:idx];
+if(!q)return;
+const correct=ans===q.answer;
 try {
 await API.post('/api/lessons/'+lessons[idx].id+'/complete',{passed:correct});
 loadLessons();
@@ -165,12 +198,21 @@ loadLesson(currentLesson);
 
 function renderMenu(){
 const menu=document.getElementById('lessonMenu');
-menu.innerHTML='<div style="font-weight:700;padding:10px;margin-bottom:10px;color:var(--primary)">Drum Lessons</div>'+
-lessons.map((l,i)=>`
-<div class="menu-item ${i===currentLesson?'active':''}" onclick="currentLesson=${i};loadLesson(${i})">
-<i class="fa-solid fa-drum"></i><span>${l.title}</span>
+const cats=[...new Set(lessons.map(l=>l.category))];
+const icons={'Drum':'fa-drum','Piano':'fa-keyboard','Guitar':'fa-guitar','Bass':'fa-guitar','Vocals':'fa-microphone','Saxophone':'fa-music','Theory':'fa-book-open'};
+let html='';
+cats.forEach(cat=>{
+const catLessons=lessons.filter(l=>l.category===cat);
+html+=`<div style="font-weight:700;padding:12px 10px 6px;color:var(--primary);font-size:13px;text-transform:uppercase">${cat}</div>`;
+catLessons.forEach((l,i)=>{
+const globalIdx=lessons.indexOf(l);
+html+=`<div class="menu-item ${globalIdx===currentLesson?'active':''}" onclick="currentLesson=${globalIdx};loadLesson(${globalIdx})">
+<i class="fa-solid ${icons[cat]||'fa-music'}"></i><span>${l.title}</span>
 <div class="check ${l.completed?'done':''}">${l.completed?'✓':''}</div>
-</div>`).join('');
+</div>`;
+});
+});
+menu.innerHTML=html;
 }
 
 function renderProgress(){
