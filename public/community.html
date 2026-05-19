@@ -45,6 +45,12 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .post-stats span:hover{color:var(--primary)}
 .post-stats i{margin-right:5px}
 .liked{color:var(--primary)}
+.comment{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.comment:last-child{border:none}
+.comment img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.comment .c-auth{font-weight:600;font-size:13px}
+.comment .c-text{font-size:14px;color:var(--text2);margin-top:2px}
+.comment .c-time{font-size:11px;color:var(--text2)}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
 .modal{background:var(--card);border-radius:28px;padding:30px;width:100%;max-width:550px;max-height:90vh;overflow-y:auto}
@@ -100,6 +106,22 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 </div>
 </div>
 
+<!-- Post Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+<div class="modal" style="max-width:650px">
+<div id="detailContent"></div>
+<h3 style="margin:20px 0 15px"><i class="fa-solid fa-comments"></i> Comments</h3>
+<div id="commentsSection" style="margin-bottom:15px"><p style="color:var(--text2)">Loading comments...</p></div>
+<div style="display:flex;gap:10px">
+<input type="text" id="commentInput" placeholder="Write a comment..." style="flex:1;padding:12px 16px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--text);outline:none;font-size:14px">
+<button class="submit-btn" onclick="postComment()" style="padding:12px 25px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-weight:600;cursor:pointer">Send</button>
+</div>
+<div class="modal-actions" style="margin-top:15px">
+<button class="cancel-btn" onclick="closeDetail()">Close</button>
+</div>
+</div>
+</div>
+
 <script>
 function toggleTheme(){
 document.body.classList.toggle('dark');
@@ -123,11 +145,11 @@ feed.innerHTML=data.posts.map(p=>`
 <div><div class="post-author">${p.author}</div><div class="post-time">${new Date(p.created_at).toLocaleDateString()}</div></div>
 </div>
 <span class="post-tag">${p.tag}</span>
-<h3>${p.title}</h3>
+<h3 onclick="openPostDetail(${p.id})">${p.title}</h3>
 <p>${p.content}</p>
 <div class="post-stats">
 <span onclick="toggleLike(${p.id})" class="${p.liked?'liked':''}"><i class="fa-${p.liked?'solid':'regular'} fa-heart"></i> ${p.likes_count}</span>
-<span><i class="fa-regular fa-comment"></i> ${p.comments_count} Comments</span>
+<span onclick="openPostDetail(${p.id})"><i class="fa-regular fa-comment"></i> ${p.comments_count} Comments</span>
 </div>
 </div>
 `).join('');
@@ -140,6 +162,62 @@ const data=await API.post('/api/posts/'+postId+'/like',{});
 loadPosts();
 } catch(e){alert('Please log in first')}
 }
+
+let selectedPostId=null;
+
+async function openPostDetail(postId){
+selectedPostId=postId;
+try {
+const data=await API.get('/api/posts?tag=all');
+const post=data.posts.find(p=>p.id==postId);
+if(!post)return;
+document.getElementById('detailContent').innerHTML=`
+<div class="post-header" style="padding:0;margin:0 0 15px 0">
+<img src="${post.author_avatar}" alt="">
+<div><div class="post-author">${post.author}</div><div class="post-time">${new Date(post.created_at).toLocaleDateString()}</div></div>
+</div>
+<span class="post-tag">${post.tag}</span>
+<h2 style="margin:12px 0 8px;font-size:22px">${post.title}</h2>
+<p style="color:var(--text2);line-height:1.6">${post.content}</p>
+<div class="post-stats" style="margin-top:15px;border:none;padding:0">
+<span class="${post.liked?'liked':''}"><i class="fa-${post.liked?'solid':'regular'} fa-heart"></i> ${post.likes_count} likes</span>
+</div>`;
+loadComments(postId);
+document.getElementById('detailModal').classList.add('show');
+} catch(e){alert(e.message)}
+}
+
+function closeDetail(){
+document.getElementById('detailModal').classList.remove('show');
+document.getElementById('commentInput').value='';
+selectedPostId=null;
+}
+
+async function loadComments(postId){
+try {
+const data=await API.get('/api/posts/'+postId+'/comments');
+const section=document.getElementById('commentsSection');
+if(data.comments.length===0){section.innerHTML='<p style="color:var(--text2)">No comments yet. Be the first!</p>';return}
+section.innerHTML=data.comments.map(c=>`
+<div class="comment">
+<img src="${c.author_avatar}" alt="">
+<div><div class="c-auth">${c.author} <span class="c-time">${new Date(c.created_at).toLocaleDateString()}</span></div><div class="c-text">${c.content}</div></div>
+</div>`).join('');
+} catch(e){document.getElementById('commentsSection').innerHTML='<p style="color:var(--text2)">Error loading comments</p>'}
+}
+
+async function postComment(){
+const content=document.getElementById('commentInput').value.trim();
+if(!content||!selectedPostId)return;
+try {
+await API.post('/api/posts/'+selectedPostId+'/comments',{content});
+document.getElementById('commentInput').value='';
+loadComments(selectedPostId);
+loadPosts();
+} catch(e){alert(e.message)}
+}
+
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail()});
 
 document.querySelectorAll('.cat-btn').forEach(btn=>{
 btn.addEventListener('click',function(){
