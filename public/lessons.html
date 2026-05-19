@@ -198,21 +198,12 @@ loadLesson(currentLesson);
 
 function renderMenu(){
 const menu=document.getElementById('lessonMenu');
-const cats=[...new Set(lessons.map(l=>l.category))];
-const icons={'Drum':'fa-drum','Piano':'fa-keyboard','Guitar':'fa-guitar','Bass':'fa-guitar','Vocals':'fa-microphone','Saxophone':'fa-music','Theory':'fa-book-open'};
-let html='';
-cats.forEach(cat=>{
-const catLessons=lessons.filter(l=>l.category===cat);
-html+=`<div style="font-weight:700;padding:12px 10px 6px;color:var(--primary);font-size:13px;text-transform:uppercase">${cat}</div>`;
-catLessons.forEach((l,i)=>{
-const globalIdx=lessons.indexOf(l);
-html+=`<div class="menu-item ${globalIdx===currentLesson?'active':''}" onclick="currentLesson=${globalIdx};loadLesson(${globalIdx})">
-<i class="fa-solid ${icons[cat]||'fa-music'}"></i><span>${l.title}</span>
+menu.innerHTML='<div style="font-weight:700;padding:10px;margin-bottom:10px;color:var(--primary)">All Lessons</div>'+
+lessons.map((l,i)=>`
+<div class="menu-item ${i===currentLesson?'active':''}" onclick="currentLesson=${i};loadLesson(${i})">
+<i class="fa-solid fa-music"></i><span>${l.title}</span>
 <div class="check ${l.completed?'done':''}">${l.completed?'✓':''}</div>
-</div>`;
-});
-});
-menu.innerHTML=html;
+</div>`).join('');
 }
 
 function renderProgress(){
