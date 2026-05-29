@@ -139,7 +139,7 @@ app.get('/api/auth/me', async (req, res) => {
 
 // ===================== USER ROUTES ===================== //
 
-app.get('/api/users/:id', async (req, res) => {
+app.get('/api/users/:id', requireAuth, async (req, res) => {
   const user = await get('SELECT id, first_name, surname, email, role, avatar, bio, gender, joined_at FROM users WHERE id = ?', [req.params.id]);
   if (!user) return res.status(404).json({ error: 'User not found' });
   const lessonCount = await query('SELECT COUNT(*) as c FROM lesson_progress WHERE user_id = ? AND quiz_passed = 1', [req.params.id]);
@@ -225,7 +225,7 @@ app.post('/api/posts/:id/comments', requireAuth, async (req, res) => {
 
 // ===================== UPLOADS ROUTES ===================== //
 
-app.get('/api/uploads', async (req, res) => {
+app.get('/api/uploads', requireAuth, async (req, res) => {
   const userId = req.query.user_id;
   let sql = `SELECT u.*, usr.first_name || ' ' || usr.surname as author, usr.avatar as author_avatar
     FROM uploads u JOIN users usr ON u.user_id = usr.id`;
