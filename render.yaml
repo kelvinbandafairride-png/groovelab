@@ -7,8 +7,15 @@ services:
     startCommand: node server.js
     envVars:
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: groovelab-db
+          property: connectionString
       - key: SESSION_SECRET
         generateValue: true
       - key: PORT
         value: 10000
+
+databases:
+  - name: groovelab-db
+    plan: free
+    databaseName: groovelab
