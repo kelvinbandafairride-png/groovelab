@@ -473,6 +473,7 @@ process.on('unhandledRejection', (err) => {
 // ===================== START ===================== //
 
 async function start() {
+  console.log('Initializing database...');
   await initDatabase();
   app.listen(PORT, () => {
     console.log(`Groove Lab server running at http://localhost:${PORT}`);
