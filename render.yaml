@@ -7,15 +7,8 @@ services:
     startCommand: node server.js
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: groovelab-db
-          property: connectionString
+        value: postgresql://postgres.esgrhmrypqfjnsdwhlvx:James19775%402025@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
       - key: SESSION_SECRET
         generateValue: true
       - key: PORT
         value: 10000
-
-databases:
-  - name: groovelab-db
-    plan: free
-    databaseName: groovelab
