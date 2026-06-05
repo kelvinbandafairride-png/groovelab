@@ -101,7 +101,15 @@ body.dark .music-bar{background:var(--card)}
 <div class="cover-grid" id="coverGrid"></div>
 
 <div class="player-section" id="playerSection">
-<div class="player-wrap"><iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div class="player-wrap" id="playerWrap">
+<div id="ytThumb" style="position:absolute;inset:0;cursor:pointer;background:#000;display:flex;align-items:center;justify-content:center">
+<img id="ytThumbImg" style="width:100%;height:100%;object-fit:cover" src="">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)">
+<i class="fa-solid fa-play-circle" style="font-size:72px;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,0.6)"></i>
+</div>
+</div>
+<iframe id="videoFrame" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="display:none"></iframe>
+</div>
 <div class="cover-detail-header">
 <div><h2 id="coverTitle">Cover</h2><p style="color:var(--text2);margin-top:5px" id="coverArtist"></p></div>
 </div>
@@ -180,7 +188,15 @@ currentIdx=i;
 const c=covers[i];
 document.getElementById('coverGrid').style.display='none';
 document.getElementById('playerSection').classList.add('show');
-document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+c.id+'?autoplay=1&rel=0';
+document.getElementById('videoFrame').src='';
+document.getElementById('videoFrame').style.display='none';
+document.getElementById('ytThumb').style.display='flex';
+document.getElementById('ytThumbImg').src='https://img.youtube.com/vi/'+c.id+'/mqdefault.jpg';
+document.getElementById('ytThumb').onclick=function(){
+document.getElementById('ytThumb').style.display='none';
+document.getElementById('videoFrame').style.display='block';
+document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+c.id+'?autoplay=1&rel=0&mute=1';
+};
 document.getElementById('coverTitle').textContent=c.title;
 document.getElementById('coverArtist').textContent=c.artist;
 }
@@ -189,6 +205,9 @@ function closePlayer(){
 document.getElementById('playerSection').classList.remove('show');
 document.getElementById('coverGrid').style.display='grid';
 document.getElementById('videoFrame').src='';
+document.getElementById('videoFrame').style.display='none';
+document.getElementById('ytThumb').style.display='flex';
+document.getElementById('ytThumbImg').src='';
 }
 
 function changeCover(dir){
