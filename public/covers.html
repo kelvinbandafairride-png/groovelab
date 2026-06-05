@@ -54,6 +54,13 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .cover-nav button:hover{opacity:0.85}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
 .empty-state i{font-size:64px;margin-bottom:16px;opacity:0.3}
+@media(max-width:600px){
+.navbar{padding:0 10px;height:62px}
+.logo h1{display:none}
+.nav-icons{gap:4px}
+.icon-box{width:36px;height:36px;border-radius:8px;font-size:14px}
+.theme-btn{width:36px;height:36px;font-size:14px;border-radius:8px;border-width:1px}
+}
 @media(max-width:768px){.cover-grid{grid-template-columns:1fr}}
 .music-bar{position:fixed;bottom:0;left:0;width:100%;height:70px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:999;box-shadow:0 -5px 20px rgba(0,0,0,0.08)}
 body.dark .music-bar{background:var(--card)}
@@ -76,6 +83,8 @@ body.dark .music-bar{background:var(--card)}
 <a href="mainmenu.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
 <div class="nav-icons">
 <a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="bpm.html" class="icon-box"><i class="fa-solid fa-gauge-high"></i></a>
+<a href="loops.html" class="icon-box"><i class="fa-solid fa-drum"></i></a>
 <a href="lessons.html" class="icon-box"><i class="fa-solid fa-graduation-cap"></i></a>
 <a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
 <a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>

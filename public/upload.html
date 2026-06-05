@@ -54,7 +54,15 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .preview-card .info p{font-size:12px;color:var(--text2)}
 .preview-card .del-btn{width:35px;height:35px;border-radius:50%;border:none;background:rgba(231,76,60,0.1);color:#e74c3c;cursor:pointer;transition:0.3s}
 .preview-card .del-btn:hover{background:#e74c3c;color:#fff}
-@media(max-width:600px){.form-row{grid-template-columns:1fr}.upload-card{padding:20px}}
+@media(max-width:600px){
+.navbar{padding:0 10px;height:62px}
+.logo h1{display:none}
+.nav-icons{gap:4px}
+.icon-box{width:36px;height:36px;border-radius:8px;font-size:14px}
+.theme-btn{width:36px;height:36px;font-size:14px;border-radius:8px;border-width:1px}
+.form-row{grid-template-columns:1fr}
+.upload-card{padding:20px}
+}
 </style>
 </head>
 <body>
@@ -63,6 +71,8 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 <a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
 <div class="nav-icons">
 <a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="bpm.html" class="icon-box"><i class="fa-solid fa-gauge-high"></i></a>
+<a href="loops.html" class="icon-box"><i class="fa-solid fa-drum"></i></a>
 <a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
 <a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
 <button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>

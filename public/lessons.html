@@ -82,6 +82,13 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 .lesson-nav button:hover{opacity:0.85}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
 .empty-state i{font-size:64px;margin-bottom:16px;opacity:0.3}
+@media(max-width:600px){
+.navbar{padding:0 10px;height:62px}
+.logo h1{display:none}
+.nav-icons{gap:4px}
+.icon-box{width:36px;height:36px;border-radius:8px;font-size:14px}
+.theme-btn{width:36px;height:36px;font-size:14px;border-radius:8px;border-width:1px}
+}
 @media(max-width:768px){.lesson-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -91,6 +98,8 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 <a href="index.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
 <div class="nav-icons">
 <a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="bpm.html" class="icon-box"><i class="fa-solid fa-gauge-high"></i></a>
+<a href="loops.html" class="icon-box"><i class="fa-solid fa-drum"></i></a>
 <a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
 <a href="upload.html" class="icon-box"><i class="fa-solid fa-upload"></i></a>
 <a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
@@ -114,6 +123,7 @@ body.dark .navbar{background:rgba(22,27,34,0.92)}
 <div id="completionBadge"></div>
 </div>
 <button class="back-btn" onclick="closePlayer()"><i class="fa-solid fa-arrow-left"></i> Back to Lessons</button>
+<a id="ytLinkBtn" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;background:#c00;color:#fff;font-weight:600;text-decoration:none;font-size:14px;margin-left:10px"><i class="fa-brands fa-youtube"></i> Watch on YouTube</a>
 <div class="progress-card"><h3><i class="fa-solid fa-chart-simple"></i> Course Progress</h3>
 <div class="progress-row"><span style="font-weight:600">Overall</span><div class="pbar"><div class="fill" id="overallProgress" style="width:0%"></div></div><span class="pct" id="progressPct">0%</span></div></div>
 <div id="quizArea"></div>
@@ -222,6 +232,7 @@ document.getElementById('lessonGrid').style.display='none';
 document.getElementById('playerSection').classList.add('show');
 document.getElementById('progressText').textContent='Now Playing: '+l.category;
 document.getElementById('videoFrame').src='https://www.youtube.com/embed/'+l.video_url+'?autoplay=1&rel=0';
+document.getElementById('ytLinkBtn').href='https://www.youtube.com/watch?v='+l.video_url;
 document.getElementById('lessonTitle').textContent=l.title;
 document.getElementById('lessonDesc').textContent=l.description;
 renderQuiz(idx);
