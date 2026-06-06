@@ -288,11 +288,10 @@ if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(
 
 function playSound(id){
 initAudio();
-const gainNode = audioCtx.createGain();
-gainNode.gain.value = masterGain * 0.5;
-gainNode.connect(audioCtx.destination);
 const p = padData.find(x => x.id === id);
 if(!p) return;
+const now = audioCtx.currentTime;
+const vol = masterGain * 0.6;
 if(p.type === 'noise'){
 const bufSize = audioCtx.sampleRate * p.decay;
 const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
@@ -303,22 +302,57 @@ src.buffer = buf;
 const bp = audioCtx.createBiquadFilter();
 bp.type = 'highpass';
 bp.frequency.value = id==='hihat'?7000:(id==='crash'?3000:(id==='openhh'?4000:1000));
+const env = audioCtx.createGain();
+env.gain.setValueAtTime(vol, now);
+env.gain.exponentialRampToValueAtTime(0.001, now + p.decay);
 src.connect(bp);
-bp.connect(gainNode);
-gainNode.gain.setValueAtTime(masterGain * 0.5, audioCtx.currentTime);
-gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + p.decay);
+bp.connect(env);
+env.connect(audioCtx.destination);
 src.start();
+} else if(id === 'kick'){
+const clickLen = Math.floor(audioCtx.sampleRate * 0.03);
+const clickBuf = audioCtx.createBuffer(1, clickLen, audioCtx.sampleRate);
+const cd = clickBuf.getChannelData(0);
+for(let i=0;i<clickLen;i++) cd[i] = (Math.random()*2-1) * Math.pow(1-i/clickLen, 4);
+const clickSrc = audioCtx.createBufferSource();
+clickSrc.buffer = clickBuf;
+const clickF = audioCtx.createBiquadFilter();
+clickF.type = 'highpass';
+clickF.frequency.value = 2000;
+const clickEnv = audioCtx.createGain();
+clickEnv.gain.setValueAtTime(vol * 0.6, now);
+clickEnv.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+clickSrc.connect(clickF);
+clickF.connect(clickEnv);
+clickEnv.connect(audioCtx.destination);
+clickSrc.start();
+const osc = audioCtx.createOscillator();
+osc.type = 'sine';
+osc.frequency.setValueAtTime(150, now);
+osc.frequency.exponentialRampToValueAtTime(45, now + p.decay);
+const subEnv = audioCtx.createGain();
+subEnv.gain.setValueAtTime(vol, now);
+subEnv.gain.exponentialRampToValueAtTime(0.001, now + p.decay);
+osc.connect(subEnv);
+subEnv.connect(audioCtx.destination);
+osc.start();
+osc.stop(now + p.decay);
 } else {
 const osc = audioCtx.createOscillator();
 osc.type = p.type;
+if(id === 'tom'){
+osc.frequency.setValueAtTime(p.freq * 1.5, now);
+osc.frequency.exponentialRampToValueAtTime(p.freq * 0.7, now + p.decay);
+} else {
 osc.frequency.value = p.freq;
+}
 const env = audioCtx.createGain();
-env.gain.setValueAtTime(masterGain * 0.5, audioCtx.currentTime);
-env.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + p.decay);
+env.gain.setValueAtTime(vol, now);
+env.gain.exponentialRampToValueAtTime(0.001, now + p.decay);
 osc.connect(env);
-env.connect(gainNode);
+env.connect(audioCtx.destination);
 osc.start();
-osc.stop(audioCtx.currentTime + p.decay);
+osc.stop(now + p.decay);
 }
 }
 
