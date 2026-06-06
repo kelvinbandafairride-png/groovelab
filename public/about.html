@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About - Groove Lab</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="/js/api.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
+body{background:var(--bg);color:var(--text);background-image:radial-gradient(circle at 20% 30%,rgba(24,119,242,0.04) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(24,119,242,0.03) 0%,transparent 50%);min-height:100vh}
+body::before{content:'♫ ♪ ♩ ♬';position:fixed;font-size:120px;color:rgba(24,119,242,0.03);top:-20px;right:-20px;transform:rotate(25deg);pointer-events:none;z-index:0;letter-spacing:40px}
+body::after{content:'♪ ♩ ♬ ♫';position:fixed;font-size:90px;color:rgba(24,119,242,0.025);bottom:40px;left:-10px;transform:rotate(-15deg);pointer-events:none;z-index:0;letter-spacing:30px}
+body.dark{--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--border:#30363d;--primary:#58a6ff}
+body.dark::before,body.dark::after{color:rgba(88,166,255,0.03)}
+.navbar{width:100%;height:75px;background:rgba(255,255,255,0.88);backdrop-filter:blur(18px);position:fixed;top:0;left:0;display:flex;align-items:center;justify-content:space-between;padding:0 25px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+body.dark .navbar{background:rgba(22,27,34,0.92)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo i{font-size:34px;color:var(--primary)}
+.logo h1{color:var(--primary);font-size:32px}
+.nav-icons{display:flex;align-items:center;gap:10px}
+.icon-box{width:45px;height:45px;background:var(--card);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;border:none;color:var(--text);font-size:18px;text-decoration:none}
+.icon-box:hover{background:var(--primary);color:#fff}
+.theme-btn{width:45px;height:45px;border-radius:50%;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;color:var(--text);transition:0.3s}
+.theme-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:800px;margin:0 auto;padding:100px 20px 80px;position:relative;z-index:1}
+.card{background:var(--card);border-radius:28px;padding:35px;box-shadow:0 5px 20px rgba(0,0,0,0.05);margin-bottom:20px}
+.card h2{font-size:26px;margin-bottom:15px}
+.card h2 i{color:var(--primary);margin-right:10px}
+.card p{font-size:15px;line-height:1.7;color:var(--text);margin-bottom:12px}
+.card .label{font-weight:600;color:var(--primary);min-width:90px;display:inline-block}
+.info-row{margin-bottom:10px;font-size:15px}
+.avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--primary);margin-bottom:15px}
+.about-header{text-align:center;margin-bottom:25px}
+.social-links{display:flex;gap:12px;justify-content:center;margin-top:20px}
+.social-links a{width:44px;height:44px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--text);font-size:20px;text-decoration:none;transition:0.3s}
+.social-links a:hover{background:var(--primary);color:#fff}
+@media(max-width:600px){
+.navbar{padding:0 10px;height:62px}
+.logo h1{display:none}
+.nav-icons{gap:4px}
+.icon-box{width:36px;height:36px;border-radius:8px;font-size:14px}
+.theme-btn{width:36px;height:36px;font-size:14px;border-radius:8px;border-width:1px}
+.card{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="mainmenu.html" class="logo"><i class="fa-solid fa-music"></i><h1>Groove Lab</h1></a>
+<div class="nav-icons">
+<a href="mainmenu.html" class="icon-box"><i class="fa-solid fa-house"></i></a>
+<a href="bpm.html" class="icon-box"><i class="fa-solid fa-gauge-high"></i></a>
+<a href="loops.html" class="icon-box"><i class="fa-solid fa-drum"></i></a>
+<a href="lessons.html" class="icon-box"><i class="fa-solid fa-graduation-cap"></i></a>
+<a href="community.html" class="icon-box"><i class="fa-solid fa-comments"></i></a>
+<a href="profile.html" class="icon-box"><i class="fa-solid fa-user"></i></a>
+<a href="about.html" class="icon-box"><i class="fa-solid fa-circle-info"></i></a>
+<button class="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+</div>
+</nav>
+
+<div class="container">
+<div class="card">
+<div class="about-header">
+<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" alt="Kelvin Banda" class="avatar">
+<h2><i class="fa-solid fa-user"></i> About the Developer</h2>
+</div>
+<p><span class="label">Name:</span> Kelvin Banda</p>
+<p><span class="label">Born:</span> 15 March, Chipata</p>
+<p><span class="label">Education:</span> Computer Science Graduate</p>
+<p><span class="label">Role:</span> Co-Founder, Nyota Tech</p>
+<p style="margin-top:18px">Kelvin Banda is a passionate software developer with a deep love for building apps and exploring new technologies. Born and raised in Chipata, he pursued a degree in Computer Science and went on to co-found Nyota Tech, a company dedicated to creating innovative digital solutions.</p>
+<p>With a strong background in software engineering, Kelvin has a knack for turning ideas into functional, user-friendly applications. His passion for tech drives him to continuously learn, build, and contribute to the ever-evolving world of software development.</p>
+<p>Groove Lab is one of his projects — a music learning and practice platform designed to help drummers and music enthusiasts improve their skills through interactive tools and lessons.</p>
+<div class="social-links">
+<a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+<a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+<a href="#" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
+</div>
+</div>
+</div>
+
+<script>
+function toggleTheme(){
+document.body.classList.toggle('dark');
+const i=document.querySelector('.theme-btn i');
+i.className=document.body.classList.contains('dark')?'fa-solid fa-sun':'fa-solid fa-moon';
+localStorage.setItem('grooveTheme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('grooveTheme')==='dark'){document.body.classList.add('dark');document.querySelector('.theme-btn i').className='fa-solid fa-sun'}
+</script>
+</body>
+</html>
