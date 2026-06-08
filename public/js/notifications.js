@@ -1,12 +1,23 @@
 const GrooveNotify = {
   _promoTimer: null,
+  _listening: false,
 
-  request() {
+  init() {
+    if (this._listening) return;
+    this._listening = true;
+    document.addEventListener('click', () => {
+      if (!('Notification' in window)) return;
+      if (Notification.permission !== 'default') return;
+      Notification.requestPermission();
+    }, { once: true });
+  },
+
+  async request() {
     if (!('Notification' in window)) return false;
     if (Notification.permission === 'granted') return true;
     if (Notification.permission === 'denied') return false;
-    Notification.requestPermission();
-    return false;
+    const result = await Notification.requestPermission();
+    return result === 'granted';
   },
 
   show(title, body) {
@@ -15,14 +26,14 @@ const GrooveNotify = {
     new Notification(title, { body, icon: '/favicon.ico' });
   },
 
-  bpm(bpm) {
-    this.request();
-    this.show('Groove Lab - BPM Tap', `Current tempo: ${bpm} BPM — keep the beat!`);
+  async bpm(bpm) {
+    const ok = await this.request();
+    if (ok) this.show('Groove Lab - BPM Tap', `Current tempo: ${bpm} BPM — keep the beat!`);
   },
 
   startPromos() {
     if (this._promoTimer) return;
-    this.request();
+    if (Notification.permission !== 'granted') return;
     const msgs = [
       'Create your own beats in Loop Studio!',
       'Learn new drum patterns in Lessons!',
@@ -36,6 +47,7 @@ const GrooveNotify = {
       'Upload and listen to your favourite tracks!',
     ];
     const pick = () => msgs[Math.floor(Math.random() * msgs.length)];
+    if (this._promoTimer) clearInterval(this._promoTimer);
     this._promoTimer = setInterval(() => {
       this.show('Groove Lab', pick());
     }, 300000);
@@ -70,3 +82,5 @@ const GrooveNotify = {
     } catch(e) {}
   }
 };
+
+GrooveNotify.init();

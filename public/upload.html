@@ -191,7 +191,6 @@ if(!confirm('Delete this track?'))return;
 try{await API.delete('/api/uploads/'+id);loadTracks()}catch(e){alert(e.message)}
 }
 loadTracks();
-GrooveNotify.request();
 </script>
 </body>
 </html>
