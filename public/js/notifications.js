@@ -2,18 +2,51 @@ const GrooveNotify = {
   _promoTimer: null,
   _listening: false,
   _banner: null,
+  _pushSubscribed: false,
 
   init() {
     if (this._listening) return;
     this._listening = true;
+    this._registerSW();
     setTimeout(() => this._checkStatus(), 1000);
     document.addEventListener('click', () => {
       if (!('Notification' in window)) return;
       if (Notification.permission !== 'default') return;
       Notification.requestPermission().then(r => {
-        if (r === 'granted') this._removeBanner();
+        if (r === 'granted') { this._removeBanner(); this._subscribePush(); }
       });
     }, { once: true });
+  },
+
+  async _registerSW() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      if (reg.active) {
+        if (Notification.permission === 'granted') this._subscribePush();
+      } else {
+        reg.addEventListener('activate', () => {
+          if (Notification.permission === 'granted') this._subscribePush();
+        });
+      }
+    } catch(e) { console.log('SW registration skipped:', e.message); }
+  },
+
+  async _subscribePush() {
+    if (this._pushSubscribed) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array('BOq1_NXyYy_yMY94C6ETHOdT7OonzkaovRsyfHaIXZpcaqCFbB62mh84ZdBwF59-0jtnnrw4ZWZLWLJXQ18FMmk')
+      });
+      await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub)
+      });
+      this._pushSubscribed = true;
+    } catch(e) { console.log('Push subscribe skipped:', e.message); }
   },
 
   _checkStatus() {
@@ -37,14 +70,14 @@ const GrooveNotify = {
     if (state === 'blocked') {
       bar.innerHTML = '<i class="fa-solid fa-bell-slash"></i> Notifications blocked — tap to see how to enable';
       bar.onclick = () => {
-        alert('To enable notifications:\n\n1. Open browser Settings\n2. Find Site Settings / Permissions\n3. Find this site and set Notifications to "Allow"\n4. Reload the page');
+        alert('To enable push notifications:\n\n1. Open browser Settings\n2. Find Site Settings / Notifications\n3. Set to "Allow"\n4. Reload the page');
       };
     } else {
-      bar.innerHTML = '<i class="fa-solid fa-bell"></i> Enable notifications for BPM alerts & promos';
+      bar.innerHTML = '<i class="fa-solid fa-bell"></i> Enable notifications for alerts outside the app';
       bar.onclick = async () => {
         const r = await Notification.requestPermission();
-        if (r === 'granted') this._removeBanner();
-        else if (r === 'denied') { bar.innerHTML = '<i class="fa-solid fa-bell-slash"></i> Notifications blocked — tap to see how to enable'; bar.onclick = () => alert('To enable notifications:\n\n1. Open browser Settings\n2. Find Site Settings / Permissions\n3. Find this site and set Notifications to "Allow"\n4. Reload the page'); }
+        if (r === 'granted') { this._removeBanner(); await this._subscribePush(); }
+        else if (r === 'denied') { bar.innerHTML = '<i class="fa-solid fa-bell-slash"></i> Notifications blocked — tap to see how to enable'; bar.onclick = () => alert('To enable push notifications:\n\n1. Open browser Settings\n2. Find Site Settings / Notifications\n3. Set to "Allow"\n4. Reload the page'); }
       };
     }
     document.body.appendChild(bar);
@@ -58,15 +91,6 @@ const GrooveNotify = {
     }
   },
 
-  async request() {
-    if (!('Notification' in window)) return false;
-    if (Notification.permission === 'granted') return true;
-    if (Notification.permission === 'denied') return false;
-    const result = await Notification.requestPermission();
-    if (result === 'granted') this._removeBanner();
-    return result === 'granted';
-  },
-
   show(title, body) {
     if (!('Notification' in window)) return;
     if (Notification.permission !== 'granted') return;
@@ -74,8 +98,17 @@ const GrooveNotify = {
   },
 
   async bpm(bpm) {
-    const ok = await this.request();
+    const ok = await this._ensureGranted();
     if (ok) this.show('Groove Lab - BPM Tap', `Current tempo: ${bpm} BPM — keep the beat!`);
+  },
+
+  async _ensureGranted() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') return true;
+    if (Notification.permission === 'denied') return false;
+    const r = await Notification.requestPermission();
+    if (r === 'granted') { this._removeBanner(); await this._subscribePush(); }
+    return r === 'granted';
   },
 
   startPromos() {
@@ -129,5 +162,12 @@ const GrooveNotify = {
     } catch(e) {}
   }
 };
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map(ch => ch.charCodeAt(0)));
+}
 
 GrooveNotify.init();

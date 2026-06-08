@@ -357,6 +357,7 @@ app.post('/api/admin/users/:id/ban', requireAdmin, async (req, res) => {
 
 app.post('/api/admin/users/:id/warn', requireAdmin, async (req, res) => {
   await query('INSERT INTO notifications (user_id, message) VALUES (?, ?)', [req.params.id, 'You have received a warning from the admin.']);
+  sendPushToUser(req.params.id, 'Admin Warning', 'You have received a warning from the admin.');
   res.json({ ok: true });
 });
 
@@ -458,6 +459,73 @@ app.get('/api/notifications', requireAuth, async (req, res) => {
   const notifs = await query('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 10', [req.session.userId]);
   res.json({ notifications: notifs });
 });
+
+// ===================== PUSH NOTIFICATIONS ===================== //
+
+const webpush = require('web-push');
+const VAPID_PUBLIC_KEY = 'BOq1_NXyYy_yMY94C6ETHOdT7OonzkaovRsyfHaIXZpcaqCFbB62mh84ZdBwF59-0jtnnrw4ZWZLWLJXQ18FMmk';
+const VAPID_PRIVATE_KEY = 'ooE7cLPEPupGOYThS-lE6uf1uaaeq8UHyyxK8N768wU';
+webpush.setVapidDetails('mailto:admin@groovelab.com', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+
+app.post('/api/push/subscribe', requireAuth, async (req, res) => {
+  const { endpoint, keys } = req.body;
+  if (!endpoint || !keys || !keys.auth || !keys.p256dh) {
+    return res.status(400).json({ error: 'Invalid subscription' });
+  }
+  await query('INSERT OR REPLACE INTO push_subscriptions (user_id, endpoint, auth, p256dh) VALUES (?, ?, ?, ?)',
+    [req.session.userId, endpoint, keys.auth, keys.p256dh]);
+  res.json({ ok: true });
+});
+
+app.delete('/api/push/unsubscribe', requireAuth, async (req, res) => {
+  const { endpoint } = req.body;
+  if (endpoint) {
+    await query('DELETE FROM push_subscriptions WHERE user_id = ? AND endpoint = ?', [req.session.userId, endpoint]);
+  } else {
+    await query('DELETE FROM push_subscriptions WHERE user_id = ?', [req.session.userId]);
+  }
+  res.json({ ok: true });
+});
+
+app.get('/api/push/vapid-key', (req, res) => {
+  res.json({ publicKey: VAPID_PUBLIC_KEY });
+});
+
+async function sendPushToUser(userId, title, body) {
+  try {
+    const subs = await query('SELECT * FROM push_subscriptions WHERE user_id = ?', [userId]);
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification({
+          endpoint: sub.endpoint,
+          keys: { auth: sub.auth, p256dh: sub.p256dh }
+        }, JSON.stringify({ title, body }));
+      } catch (e) {
+        if (e.statusCode === 410 || e.statusCode === 404) {
+          await query('DELETE FROM push_subscriptions WHERE id = ?', [sub.id]);
+        }
+      }
+    }
+  } catch(e) { console.error('Push error:', e.message); }
+}
+
+async function sendPushToAll(title, body) {
+  try {
+    const subs = await query('SELECT DISTINCT endpoint, auth, p256dh FROM push_subscriptions');
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification({
+          endpoint: sub.endpoint,
+          keys: { auth: sub.auth, p256dh: sub.p256dh }
+        }, JSON.stringify({ title, body }));
+      } catch (e) {
+        if (e.statusCode === 410 || e.statusCode === 404) {
+          await query('DELETE FROM push_subscriptions WHERE endpoint = ?', [sub.endpoint]);
+        }
+      }
+    }
+  } catch(e) { console.error('Push all error:', e.message); }
+}
 
 // ===================== ERROR HANDLER ===================== //
 
