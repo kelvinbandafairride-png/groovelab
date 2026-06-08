@@ -1,15 +1,61 @@
 const GrooveNotify = {
   _promoTimer: null,
   _listening: false,
+  _banner: null,
 
   init() {
     if (this._listening) return;
     this._listening = true;
+    setTimeout(() => this._checkStatus(), 1000);
     document.addEventListener('click', () => {
       if (!('Notification' in window)) return;
       if (Notification.permission !== 'default') return;
-      Notification.requestPermission();
+      Notification.requestPermission().then(r => {
+        if (r === 'granted') this._removeBanner();
+      });
     }, { once: true });
+  },
+
+  _checkStatus() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') {
+      this.startPromos();
+      return;
+    }
+    if (Notification.permission === 'denied') {
+      this._showBanner('blocked');
+    } else {
+      this._showBanner('default');
+    }
+  },
+
+  _showBanner(state) {
+    if (this._banner) return;
+    const bar = document.createElement('div');
+    bar.id = 'gl-notify-bar';
+    bar.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:#1877f2;color:#fff;padding:12px 24px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 8px 25px rgba(0,0,0,0.2);display:flex;align-items:center;gap:10px;max-width:90%;font-family:Segoe UI,sans-serif';
+    if (state === 'blocked') {
+      bar.innerHTML = '<i class="fa-solid fa-bell-slash"></i> Notifications blocked — tap to see how to enable';
+      bar.onclick = () => {
+        alert('To enable notifications:\n\n1. Open browser Settings\n2. Find Site Settings / Permissions\n3. Find this site and set Notifications to "Allow"\n4. Reload the page');
+      };
+    } else {
+      bar.innerHTML = '<i class="fa-solid fa-bell"></i> Enable notifications for BPM alerts & promos';
+      bar.onclick = async () => {
+        const r = await Notification.requestPermission();
+        if (r === 'granted') this._removeBanner();
+        else if (r === 'denied') { bar.innerHTML = '<i class="fa-solid fa-bell-slash"></i> Notifications blocked — tap to see how to enable'; bar.onclick = () => alert('To enable notifications:\n\n1. Open browser Settings\n2. Find Site Settings / Permissions\n3. Find this site and set Notifications to "Allow"\n4. Reload the page'); }
+      };
+    }
+    document.body.appendChild(bar);
+    this._banner = bar;
+  },
+
+  _removeBanner() {
+    if (this._banner) {
+      this._banner.remove();
+      this._banner = null;
+    }
   },
 
   async request() {
@@ -17,6 +63,7 @@ const GrooveNotify = {
     if (Notification.permission === 'granted') return true;
     if (Notification.permission === 'denied') return false;
     const result = await Notification.requestPermission();
+    if (result === 'granted') this._removeBanner();
     return result === 'granted';
   },
 
