@@ -1,13 +1,10 @@
 const GrooveNotify = {
-  _requested: false,
   _promoTimer: null,
 
   request() {
     if (!('Notification' in window)) return false;
     if (Notification.permission === 'granted') return true;
     if (Notification.permission === 'denied') return false;
-    if (this._requested) return false;
-    this._requested = true;
     Notification.requestPermission();
     return false;
   },
