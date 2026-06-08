@@ -94,7 +94,7 @@ const GrooveNotify = {
   show(title, body) {
     if (!('Notification' in window)) return;
     if (Notification.permission !== 'granted') return;
-    new Notification(title, { body, icon: '/favicon.ico' });
+    new Notification(title, { body, icon: '/icon.svg' });
   },
 
   async bpm(bpm) {
