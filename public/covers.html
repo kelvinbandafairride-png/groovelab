@@ -6,6 +6,7 @@
 <title>Drum Covers - Groove Lab</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="/js/api.js"></script>
+<script src="/js/notifications.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
 :root{--bg:#f0f2f5;--card:#fff;--text:#111;--text2:#555;--border:#ddd;--primary:#1877f2}
@@ -144,7 +145,7 @@ body.dark .music-bar{background:var(--card)}
 const mpAudio=document.getElementById('mpAudio');
 let mpPlaylist=[],mpIdx=-1,mpPlaying=false;
 function mpLoad(i){for(let f of i.files){mpPlaylist.push({title:f.name.replace(/\.[^.]+$/,''),artist:'Local File',src:URL.createObjectURL(f)})}i.value='';if(!mpPlaying&&mpPlaylist.length)mpPlayTrack(mpPlaylist.length-1)}
-function mpPlayTrack(i){if(i<0||i>=mpPlaylist.length)return;mpIdx=i;const t=mpPlaylist[i];mpAudio.src=t.src;mpAudio.play().then(()=>{mpPlaying=true;document.getElementById('mpPc').className='fa-solid fa-pause';document.getElementById('mpTitle').textContent=t.title;document.getElementById('mpArtist').textContent=t.artist;document.getElementById('mpArt').src=t.art||'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop'}).catch(()=>{})}
+function mpPlayTrack(i){if(i<0||i>=mpPlaylist.length)return;mpIdx=i;const t=mpPlaylist[i];mpAudio.src=t.src;mpAudio.play().then(()=>{mpPlaying=true;document.getElementById('mpPc').className='fa-solid fa-pause';document.getElementById('mpTitle').textContent=t.title;document.getElementById('mpArtist').textContent=t.artist;document.getElementById('mpArt').src=t.art||'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=100&auto=format&fit=crop';GrooveNotify.setupMediaSession(t.title,t.artist,t.art);GrooveNotify.setMediaActions(mpPlay,mpPlay,mpPrev,mpNext)}).catch(()=>{})}
 function mpPlay(){if(!mpPlaylist.length){document.getElementById('mpFile').click();return}if(mpIdx<0){mpPlayTrack(0);return}if(mpPlaying){mpAudio.pause();mpPlaying=false;document.getElementById('mpPc').className='fa-solid fa-play'}else{mpAudio.play();mpPlaying=true;document.getElementById('mpPc').className='fa-solid fa-pause'}}
 function mpNext(){if(!mpPlaylist.length)return;mpPlayTrack((mpIdx+1)%mpPlaylist.length)}
 function mpPrev(){if(!mpPlaylist.length)return;mpPlayTrack((mpIdx-1+mpPlaylist.length)%mpPlaylist.length)}
@@ -218,6 +219,7 @@ openCover(next);
 }
 
 renderCovers();
+GrooveNotify.startPromos();
 </script>
 </body>
 </html>
