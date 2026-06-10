@@ -7,7 +7,13 @@ services:
     startCommand: node server.js
     envVars:
       - key: DATABASE_URL
-        value: postgresql://postgres.esgrhmrypqfjnsdwhlvx:James19775%402025@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
+        fromEnv: DATABASE_URL
+      - key: SUPABASE_URL
+        value: https://mlorcfccdngwjgwnxlmk.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sb3JjZmNkbmd3amd3bnhsbWsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc0ODQ2MTkwMiwiZXhwIjoyMDY0MDM3OTAyfQ.Xy5-xRlYSldCPOc7tMY94bRSj5sOTrOm7GONPq7mEUY
+      - key: SUPABASE_SERVICE_KEY
+        fromEnv: SUPABASE_SERVICE_KEY
       - key: SESSION_SECRET
         generateValue: true
       - key: PORT

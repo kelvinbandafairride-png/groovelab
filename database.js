@@ -1,9 +1,18 @@
 const path = require('path');
 const fs = require('fs');
+const { createClient } = require('@supabase/supabase-js');
 
 const usePostgres = !!process.env.DATABASE_URL;
 let db = null;
 let pgPool = null;
+let supabase = null;
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://mlorcfccdngwjgwnxlmk.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sb3JjZmNkbmd3amd3bnhsbWsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc0ODQ2MTkwMiwiZXhwIjoyMDY0MDM3OTAyfQ.Xy5-xRlYSldCPOc7tMY94bRSj5sOTrOm7GONPq7mEUY';
+
+if (process.env.SUPABASE_SERVICE_KEY) {
+  supabase = createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+}
 
 function convertSql(sql) {
   if (!usePostgres) return sql;
@@ -23,6 +32,56 @@ function convertSql(sql) {
 function needsReturning(sql) {
   const s = sql.trim().toUpperCase();
   return s.startsWith('INSERT') && !s.includes('RETURNING');
+}
+
+async function enableRLS() {
+  if (!usePostgres && !supabase) return;
+  const tables = ['users', 'posts', 'comments', 'likes', 'uploads', 'lessons', 'lesson_progress', 'achievements', 'notifications', 'push_subscriptions'];
+  for (const table of tables) {
+    try {
+      if (supabase) {
+        await supabase.rpc('exec_sql', { query_text: `ALTER TABLE IF EXISTS ${table} ENABLE ROW LEVEL SECURITY;` });
+        const policyName = `deny_anon_${table}`;
+        await supabase.rpc('exec_sql', { query_text: `
+          DO $$ BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = '${table}' AND policyname = '${policyName}') THEN
+              CREATE POLICY "${policyName}" ON ${table} FOR ALL TO anon USING (false);
+            END IF;
+          END $$;
+        `});
+      }
+      if (pgPool) {
+        try { await pgPool.query(`ALTER TABLE IF EXISTS ${table} ENABLE ROW LEVEL SECURITY;`); } catch(e) {}
+        try {
+          await pgPool.query(`
+            DO $$ BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = '${table}' AND policyname = 'deny_anon_${table}') THEN
+                CREATE POLICY "deny_anon_${table}" ON ${table} FOR ALL TO anon USING (false);
+              END IF;
+            END $$;
+          `);
+        } catch(e) {}
+      }
+    } catch(e) { console.log(`RLS skip ${table}: ${e.message}`); }
+  }
+}
+
+async function createExecSqlFunction() {
+  if (!pgPool && !supabase) return;
+  const fnSql = `
+    CREATE OR REPLACE FUNCTION exec_sql(query_text TEXT)
+    RETURNS SETOF JSON
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    AS $$
+    BEGIN
+      RETURN QUERY EXECUTE query_text;
+    END;
+    $$;
+  `;
+  try {
+    if (pgPool) await pgPool.query(fnSql);
+  } catch(e) { console.log('exec_sql fn skip:', e.message); }
 }
 
 async function initDatabase() {
@@ -58,6 +117,9 @@ async function initDatabase() {
     await pgPool.query(`CREATE TABLE IF NOT EXISTS achievements (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), badge_name TEXT NOT NULL, earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, badge_name))`);
     await pgPool.query(`CREATE TABLE IF NOT EXISTS notifications (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), message TEXT NOT NULL, is_read INTEGER DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
     await pgPool.query(`CREATE TABLE IF NOT EXISTS push_subscriptions (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, endpoint TEXT NOT NULL, auth TEXT NOT NULL, p256dh TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, endpoint))`);
+
+    await createExecSqlFunction();
+    await enableRLS();
   } else {
     const initSqlJs = require('sql.js');
     const SQL = await initSqlJs();
@@ -215,4 +277,7 @@ async function close() {
   }
 }
 
-module.exports = { initDatabase, query, get, close };
+module.exports = {
+  initDatabase, query, get, close, saveDatabase,
+  supabase, SUPABASE_URL, SUPABASE_ANON_KEY
+};

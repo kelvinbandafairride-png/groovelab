@@ -5,7 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { initDatabase, query, get, close, saveDatabase } = require('./database');
+const { initDatabase, query, get, close, saveDatabase, supabase, SUPABASE_URL, SUPABASE_ANON_KEY } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -526,6 +526,25 @@ async function sendPushToAll(title, body) {
     }
   } catch(e) { console.error('Push all error:', e.message); }
 }
+
+// ===================== SUPABASE CLIENT CONFIG ===================== //
+
+app.get('/api/supabase/config', (req, res) => {
+  res.json({ url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY });
+});
+
+app.post('/api/supabase/rpc', requireAuth, async (req, res) => {
+  try {
+    if (!supabase) return res.status(503).json({ error: 'Supabase client not available' });
+    const { procedure, params } = req.body;
+    if (!procedure) return res.status(400).json({ error: 'Procedure name required' });
+    const { data, error } = await supabase.rpc(procedure, params || {});
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ===================== ERROR HANDLER ===================== //
 
